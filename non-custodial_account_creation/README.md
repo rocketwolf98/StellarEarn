@@ -466,7 +466,7 @@ class StellarAuth {
 ---
 
 **Version:** 1.0.0  
-**Last Updated:** [Current Date]  
+**Last Updated:** May 21, 2026
 **Stellar SDK Version:** 12.0.0+
 
 This guide provides everything needed to implement non-custodial Stellar accounts for your bounty platform. The key takeaway: **generate keys client-side, encrypt them, store locally, and never touch the backend**.
