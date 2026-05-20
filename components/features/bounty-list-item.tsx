@@ -11,55 +11,61 @@ export function BountyListItem({ bounty }: BountyListItemProps) {
   return (
     <Link
       href={`/projects/${bounty.slug}`}
-      className="flex cursor-pointer items-center gap-3 -mx-2 rounded-xl border border-transparent py-3 px-3.5 hover:bg-white/50 hover:backdrop-blur-sm hover:border-zinc-200/30 hover:shadow-sm transition-all duration-200 decoration-transparent"
+      className="group relative overflow-hidden flex cursor-pointer items-center gap-3 -mx-2 rounded-xl border border-transparent py-3 px-3.5 bg-transparent hover:bg-card/70 hover:backdrop-blur-md hover:border-border hover:shadow-[0_4px_12px_rgba(15,15,15,0.03)] dark:hover:shadow-[0_4px_12px_rgba(0,0,0,0.3)] hover:translate-y-[-1px] transition-all duration-200 decoration-transparent"
     >
+      {/* Premium Halftone Dot Texture Overlay on Hover */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-stellar-dots-light dark:bg-stellar-dots-dark transition-opacity duration-300 pointer-events-none" />
+
       <div
-        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-zinc-200 text-[11px] font-semibold"
+        className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-stellar-gray/30 dark:border-stellar-gray/10 text-[11px] font-bold shadow-sm"
         style={{ background: bounty.bg, color: bounty.color }}
       >
         {bounty.initials}
       </div>
-      <div className="flex-1 min-w-0">
-        <div className="mb-1 truncate text-[13px] font-medium text-zinc-950">
+      <div className="relative z-10 flex-1 min-w-0">
+        <div className="mb-0.5 truncate text-[13.5px] font-semibold text-stellar-black dark:text-stellar-white group-hover:text-stellar-navy dark:group-hover:text-stellar-yellow transition-colors duration-200">
           {bounty.title}
         </div>
-        <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-zinc-400">
-          <span>{bounty.org}</span>
-          <CheckBadgeIcon className="w-3.5 h-3.5 text-[#00A7B5]" />
-          <span className="text-zinc-300">|</span>
+        <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-stellar-gray/90 dark:text-stellar-gray/70">
+          <span className="font-medium text-stellar-black/70 dark:text-stellar-white/70">{bounty.org}</span>
+          <CheckBadgeIcon className="w-3.5 h-3.5 text-stellar-teal" />
+          <span className="text-stellar-gray/30 dark:text-stellar-gray/20">|</span>
           <Badge
             variant="outline"
-            className={`h-5 px-2 text-[10px] font-normal ${
+            className={`h-5 px-2 text-[10px] font-medium transition-colors duration-200 ${
               bounty.type === "bounty"
-                ? "border-[#00A7B5]/20 bg-[#00A7B5]/5 text-[#00A7B5]"
-                : "border-[#B7ACE8]/30 bg-[#B7ACE8]/5 text-[#B7ACE8]"
+                ? "border-stellar-teal/20 bg-stellar-teal/5 text-stellar-teal group-hover:bg-stellar-teal/10"
+                : "border-stellar-lavender/30 bg-stellar-lavender/5 text-stellar-lavender group-hover:bg-stellar-lavender/10"
             }`}
           >
             {bounty.type.charAt(0).toUpperCase() + bounty.type.slice(1)}
           </Badge>
-          <span className="text-zinc-300">|</span>
+          <span className="text-stellar-gray/30 dark:text-stellar-gray/20">|</span>
           <span>{bounty.due}</span>
-          <span className="text-zinc-300">|</span>
+          <span className="text-stellar-gray/30 dark:text-stellar-gray/20">|</span>
           <div className="flex items-center gap-1">
-            <ChatBubbleLeftIcon className="w-3.5 h-3.5 text-zinc-400" />
+            <ChatBubbleLeftIcon className="w-3.5 h-3.5 text-stellar-gray/80 dark:text-stellar-gray/60" />
             <span>{bounty.submissions}</span>
           </div>
           {bounty.featured && (
-            <div className="flex items-center gap-0.5 ml-1 text-amber-500 text-[10px] font-bold">
-              <StarIcon className="w-3.5 h-3.5" /> FEATURED
+            <div className="flex items-center gap-0.5 ml-1 text-stellar-yellow text-[9px] font-bold tracking-wider drop-shadow-[0_1px_2px_rgba(15,15,15,0.15)] dark:drop-shadow-none">
+              <StarIcon className="w-3.5 h-3.5 animate-pulse" /> FEATURED
             </div>
           )}
           {bounty.live && (
-            <span className="ml-1 h-1.5 w-1.5 shrink-0 rounded-full bg-green-500" />
+            <span className="relative ml-1 flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
           )}
         </div>
       </div>
-      <div className="flex shrink-0 items-center gap-1">
-        <CurrencyDollarIcon className="w-4 h-4 text-green-500" />
-        <span className="text-[13px] font-medium text-zinc-950">
+      <div className="relative z-10 flex shrink-0 items-center gap-1 bg-stellar-gray/10 dark:bg-stellar-gray/5 px-2.5 py-1 rounded-lg border border-stellar-gray/20 dark:border-stellar-gray/10 transition-all duration-200 group-hover:bg-stellar-teal/5 group-hover:border-stellar-teal/20 group-hover:text-stellar-teal shadow-xs">
+        <CurrencyDollarIcon className="w-3.5 h-3.5 text-stellar-teal group-hover:scale-110 transition-transform duration-200" />
+        <span className="text-[12.5px] font-bold text-stellar-black dark:text-stellar-white group-hover:text-stellar-teal transition-colors duration-200">
           {bounty.prize.toLocaleString()}
         </span>
-        <span className="text-[11px] text-zinc-400">PHP</span>
+        <span className="text-[10px] text-stellar-gray/90 group-hover:text-stellar-teal/80 transition-colors duration-200 font-semibold">PHP</span>
       </div>
     </Link>
   );
