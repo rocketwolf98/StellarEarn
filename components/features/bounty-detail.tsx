@@ -21,7 +21,7 @@ export function BountyDetail({ bounty }: BountyDetailProps) {
         href="/"
         className={cn(
           buttonVariants({ variant: "ghost" }),
-          "mb-5 h-auto p-0 text-xs text-stellar-gray/90 hover:bg-transparent hover:text-stellar-black dark:text-stellar-gray/70 dark:hover:text-stellar-yellow inline-flex items-center gap-1.5 transition-colors duration-200"
+          "mb-5 h-auto p-0 text-xs text-muted-foreground hover:bg-transparent hover:text-stellar-black dark:text-stellar-gray/70 dark:hover:text-stellar-yellow inline-flex items-center gap-1.5 transition-colors duration-200"
         )}
       >
         <ArrowLeftIcon className="h-3 w-3 transition-transform duration-200 group-hover:-translate-x-0.5" /> Browse opportunities
@@ -41,7 +41,7 @@ export function BountyDetail({ bounty }: BountyDetailProps) {
           <h1 className="mb-2.5 text-[24px] font-bold leading-[1.3] text-stellar-black dark:text-stellar-white tracking-tight">
             {bounty.title}
           </h1>
-          <div className="mb-5 flex flex-wrap items-center gap-2.5 text-xs text-stellar-gray/90 dark:text-stellar-gray/70">
+          <div className="mb-5 flex flex-wrap items-center gap-2.5 text-xs text-muted-foreground dark:text-stellar-gray/70">
             <Badge
               variant="outline"
               className={`h-5 px-2 text-[10px] font-semibold transition-colors duration-200 ${
@@ -52,11 +52,11 @@ export function BountyDetail({ bounty }: BountyDetailProps) {
             >
               {bounty.type.charAt(0).toUpperCase() + bounty.type.slice(1)}
             </Badge>
-            <span className="text-stellar-gray/30 dark:text-stellar-gray/20">·</span>
-            <span>{bounty.due}</span>
-            <span className="text-stellar-gray/30 dark:text-stellar-gray/20">·</span>
-            <div className="flex items-center gap-1">
-              <ChatBubbleLeftIcon className="h-3.5 w-3.5 text-stellar-gray/70 dark:text-stellar-gray/60" />
+            <span className="text-stellar-black/20 dark:text-stellar-gray/20">·</span>
+            <span className="font-medium text-stellar-black/70 dark:text-stellar-gray/70">{bounty.due}</span>
+            <span className="text-stellar-black/20 dark:text-stellar-gray/20">·</span>
+            <div className="flex items-center gap-1 font-medium text-stellar-black/70 dark:text-stellar-gray/70">
+              <ChatBubbleLeftIcon className="h-3.5 w-3.5 text-stellar-black/40 dark:text-stellar-gray/60" />
               <span>{bounty.submissions} submissions</span>
             </div>
             {bounty.live && (
@@ -97,7 +97,7 @@ export function BountyDetail({ bounty }: BountyDetailProps) {
               ["Escrow status", <div key="escrow" className="flex items-center gap-1 text-emerald-500 font-semibold">Locked <CheckCircleIcon className="h-3.5 w-3.5 text-emerald-500 animate-pulse" /></div>],
             ].map(([l, v], idx, arr) => (
               <div key={idx} className={`relative z-10 flex justify-between items-center py-2 text-[12px] ${idx !== arr.length - 1 ? "border-b border-stellar-gray/15 dark:border-stellar-gray/10" : ""}`}>
-                <span className="text-stellar-gray/90 dark:text-stellar-gray/70 font-medium">{l as string}</span>
+                <span className="text-muted-foreground dark:text-stellar-gray/70 font-medium">{l as string}</span>
                 <span className={`font-semibold ${l === "Escrow status" ? "" : "text-stellar-black dark:text-stellar-white"}`}>{v}</span>
               </div>
             ))}
@@ -107,7 +107,7 @@ export function BountyDetail({ bounty }: BountyDetailProps) {
             >
               Pay fee &amp; submit
             </Button>
-            <p className="relative z-10 mt-3 text-center text-[10px] leading-[1.5] text-stellar-gray/80 dark:text-stellar-gray/60 font-medium">
+            <p className="relative z-10 mt-3 text-center text-[10px] leading-[1.5] text-stellar-black/50 dark:text-stellar-gray/60 font-medium">
               Winners get their {bounty.fee} fee back plus the full prize. Losing fees fund the platform.
             </p>
           </Card>
@@ -123,7 +123,7 @@ export function BountyDetail({ bounty }: BountyDetailProps) {
               </div>
               <div>
                 <div className="text-[12.5px] font-bold text-stellar-black dark:text-stellar-white">{bounty.org}</div>
-                <div className="flex items-center gap-1 text-[11px] text-stellar-gray/80 dark:text-stellar-gray/60 font-medium">
+                <div className="flex items-center gap-1 text-[11px] text-stellar-black/50 dark:text-stellar-gray/60 font-medium">
                   Verified DAO <CheckBadgeIcon className="h-3.5 w-3.5 text-stellar-teal" />
                 </div>
               </div>
