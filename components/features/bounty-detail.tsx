@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
@@ -8,6 +8,7 @@ import type { Bounty } from "@/lib/data";
 import { CheckBadgeIcon, ChatBubbleLeftIcon, CheckCircleIcon } from "@heroicons/react/24/solid";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 interface BountyDetailProps {
   bounty: Bounty;
@@ -16,10 +17,14 @@ interface BountyDetailProps {
 export function BountyDetail({ bounty }: BountyDetailProps) {
   return (
     <div className="mx-auto max-w-5xl p-6">
-      <Link href="/" passHref legacyBehavior>
-        <Button variant="ghost" className="mb-5 h-auto p-0 text-xs text-zinc-500 hover:bg-transparent hover:text-zinc-950">
-          <ArrowLeftIcon className="mr-1.5 h-3 w-3" /> Browse opportunities
-        </Button>
+      <Link
+        href="/"
+        className={cn(
+          buttonVariants({ variant: "ghost" }),
+          "mb-5 h-auto p-0 text-xs text-zinc-500 hover:bg-transparent hover:text-zinc-950 inline-flex items-center gap-1.5"
+        )}
+      >
+        <ArrowLeftIcon className="h-3 w-3" /> Browse opportunities
       </Link>
       <div className="grid grid-cols-1 gap-6 md:grid-cols-[1fr_260px]">
         <div>
