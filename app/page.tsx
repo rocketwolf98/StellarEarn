@@ -88,17 +88,7 @@ function StellarEarnDashboard() {
           </div>
         </div>
 
-        <div className="relative z-10 hidden grid-cols-3 gap-2 md:grid">
-          {["SD", "SE", "SS", "SF", "SL", "SA", "ST", "SP", "SR"].map((s, i) => (
-            <div
-              key={i}
-              className="flex h-11 w-11 animate-pulse items-center justify-center rounded-xl border border-white/20 bg-white/10 text-[10px] font-semibold text-white/70 backdrop-blur-sm"
-              style={{ animationDelay: `${i * 0.3}s` }}
-            >
-              {s}
-            </div>
-          ))}
-        </div>
+
       </div>
 
       {/* ── Two-column layout ── */}
@@ -256,7 +246,7 @@ function StellarEarnDashboard() {
           <Card className="mb-6 overflow-hidden border-border bg-card shadow-sm hover:shadow-md transition-all duration-300">
             <div className="relative bg-stellar-fluid flex items-center justify-center gap-2 p-5 text-xl font-extrabold tracking-widest text-white border-b border-black/15 shadow-sm">
               <div className="absolute inset-0 bg-stellar-noise-direct opacity-[0.015] pointer-events-none" />
-              <SparklesIcon className="relative z-10 h-5 w-5 text-stellar-yellow animate-pulse" /> 
+              <SparklesIcon className="relative z-10 h-5 w-5 text-stellar-yellow animate-pulse" />
               <span className="relative z-10">STELLAR EARN</span>
             </div>
             <div className="p-3.5">

@@ -45,7 +45,7 @@ export function BountyListItem({ bounty }: BountyListItemProps) {
             <span>{bounty.submissions}</span>
           </div>
           {bounty.featured && (
-            <div className="flex items-center gap-0.5 ml-1 text-stellar-yellow text-[9px] font-bold tracking-wider drop-shadow-[0_1px_2px_rgba(15,15,15,0.15)] dark:drop-shadow-none">
+            <div className="flex items-center gap-0.5 ml-1 text-stellar-yellow text-[9px] font-bold tracking-wider">
               <StarIcon className="w-3.5 h-3.5 animate-pulse" /> FEATURED
             </div>
           )}
