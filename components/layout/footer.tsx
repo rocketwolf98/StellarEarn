@@ -1,4 +1,5 @@
 import { SparklesIcon, GlobeAltIcon, ChevronUpDownIcon, ViewColumnsIcon } from "@heroicons/react/24/solid";
+import Link from "next/link";
 
 export function Footer() {
   return (
@@ -15,9 +16,9 @@ export function Footer() {
             Discover bounties, projects, and grants from Stellar DAOs and ecosystem projects. Earn in PHP, build on-chain reputation.
           </p>
           <div className="mb-4 flex gap-3">
-            <a href="#" className="text-xs text-zinc-500 no-underline hover:text-zinc-950">GitHub</a>
-            <a href="#" className="text-xs text-zinc-500 no-underline hover:text-zinc-950">X</a>
-            <a href="#" className="text-xs text-zinc-500 no-underline hover:text-zinc-950">Email</a>
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-xs text-zinc-500 no-underline hover:text-zinc-950">GitHub</a>
+            <a href="https://x.com" target="_blank" rel="noopener noreferrer" className="text-xs text-zinc-500 no-underline hover:text-zinc-950">X</a>
+            <a href="mailto:contact@stellarearn.com" className="text-xs text-zinc-500 no-underline hover:text-zinc-950">Email</a>
           </div>
           <div className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 px-2.5 py-1.5">
             <span className="text-[9px] tracking-[0.06em] text-zinc-400">POWERED BY</span>
@@ -28,18 +29,41 @@ export function Footer() {
         </div>
         <div className="flex flex-wrap gap-12">
           {[
-            { title: "Opportunities", links: ["Bounties", "Projects", "Grants"] },
-            { title: "Categories", links: ["Content", "Design", "Development", "Research"] },
-            { title: "About", links: ["FAQ", "Terms", "Privacy Policy", "Contact Us"] },
+            {
+              title: "Opportunities",
+              links: [
+                { label: "Bounties", href: "/?tab=bounties" },
+                { label: "Projects", href: "/?tab=projects" },
+                { label: "Grants", href: "/#grants" },
+              ],
+            },
+            {
+              title: "Categories",
+              links: [
+                { label: "Content", href: "/?skill=content" },
+                { label: "Design", href: "/?skill=design" },
+                { label: "Development", href: "/?skill=dev" },
+                { label: "Research", href: "/?skill=research" },
+              ],
+            },
+            {
+              title: "About",
+              links: [
+                { label: "FAQ", href: "#" },
+                { label: "Terms", href: "#" },
+                { label: "Privacy Policy", href: "#" },
+                { label: "Contact Us", href: "#" },
+              ],
+            },
           ].map((col) => (
             <div key={col.title} className="flex flex-col gap-2">
               <div className="mb-0.5 text-[11px] font-semibold uppercase tracking-[0.07em] text-zinc-500">
                 {col.title}
               </div>
               {col.links.map((l) => (
-                <a key={l} href="#" className="text-[13px] text-zinc-700 no-underline hover:text-[#00A7B5]">
-                  {l}
-                </a>
+                <Link key={l.label} href={l.href} className="text-[13px] text-zinc-700 no-underline hover:text-[#00A7B5]">
+                  {l.label}
+                </Link>
               ))}
             </div>
           ))}
