@@ -67,11 +67,10 @@ function StellarEarnDashboard() {
   });
 
   return (
-    <div className="bg-stellar-dots-light/10 dark:bg-stellar-dots-dark/5 pb-20 backdrop-blur-[1px]">
+    <div className="pb-20 backdrop-blur-[1px]">
       {/* ── Hero ── */}
       <div className="relative flex min-h-[180px] items-center justify-between overflow-hidden bg-stellar-cosmic px-[8vw] py-8 rounded-2xl mb-6 border border-white/15 shadow-xl mx-[1vw] my-[1vh] hover:shadow-2xl transition-all duration-300">
         {/* Layered textures inside Hero */}
-        <div className="absolute inset-0 bg-stellar-dots-dark opacity-[0.14] pointer-events-none" />
         <div className="absolute inset-0 bg-stellar-noise-direct opacity-[0.015] pointer-events-none" />
         <div className="relative z-10 max-w-[480px]">
           <div className="mb-2 text-stellar-yellow">
@@ -255,12 +254,11 @@ function StellarEarnDashboard() {
           {/* Promo card */}
           <Card className="mb-6 overflow-hidden border-border bg-card shadow-sm hover:shadow-md transition-all duration-300">
             <div className="relative bg-stellar-fluid flex items-center justify-center gap-2 p-5 text-xl font-extrabold tracking-widest text-white border-b border-black/15 shadow-sm">
-              <div className="absolute inset-0 bg-stellar-dots-dark opacity-[0.15] pointer-events-none" />
               <div className="absolute inset-0 bg-stellar-noise-direct opacity-[0.015] pointer-events-none" />
               <SparklesIcon className="relative z-10 h-5 w-5 text-stellar-yellow animate-pulse" /> 
               <span className="relative z-10">STELLAR EARN</span>
             </div>
-            <div className="p-3.5 bg-stellar-dots-light/5 dark:bg-stellar-dots-dark/5">
+            <div className="p-3.5">
               <div className="mb-1.5 text-[13px] font-semibold leading-tight text-foreground">
                 Are you a dev? We have prizes worth ₱430,000+ for you
               </div>

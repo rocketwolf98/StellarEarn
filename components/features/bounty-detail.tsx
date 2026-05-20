@@ -83,8 +83,6 @@ export function BountyDetail({ bounty }: BountyDetailProps) {
         
         <div>
           <Card className="group relative overflow-hidden mb-3 p-5 shadow-[0_4px_20px_rgba(15,15,15,0.02)] border border-stellar-gray/20 dark:border-stellar-gray/10 bg-white/70 dark:bg-[#151515]/70 backdrop-blur-md">
-            {/* Dot Texture Overlay */}
-            <div className="absolute inset-0 bg-stellar-dots-light/5 dark:bg-stellar-dots-dark/10 pointer-events-none" />
 
             <div className="relative z-10 pt-2 pb-1.5 text-center text-[30px] font-bold text-stellar-teal tracking-tight">
               ₱{bounty.prize.toLocaleString()}
@@ -115,7 +113,6 @@ export function BountyDetail({ bounty }: BountyDetailProps) {
           </Card>
           
           <Card className="group relative overflow-hidden p-5 shadow-[0_4px_20px_rgba(15,15,15,0.02)] border border-stellar-gray/20 dark:border-stellar-gray/10 bg-white/70 dark:bg-[#151515]/70 backdrop-blur-md">
-            <div className="absolute inset-0 bg-stellar-dots-light/5 dark:bg-stellar-dots-dark/10 pointer-events-none" />
             <p className="relative z-10 mb-3 text-[10px] font-bold uppercase tracking-[0.1em] text-stellar-navy dark:text-stellar-lavender">Posted by</p>
             <div className="relative z-10 flex items-center gap-2.5">
               <div
