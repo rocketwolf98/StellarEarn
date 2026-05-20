@@ -148,16 +148,16 @@ export function AuthModal({
           onValueChange={setActiveTab}
           className="mt-2 w-full"
         >
-          <TabsList className="grid w-full grid-cols-2 rounded-lg bg-zinc-100 p-1 dark:bg-zinc-900">
+          <TabsList className="grid w-full grid-cols-2 rounded-full bg-zinc-100 p-1 h-9 items-center dark:bg-zinc-900">
             <TabsTrigger 
               value="signin" 
-              className="py-1.5 text-xs font-semibold data-active:bg-white data-active:text-zinc-900 dark:data-active:bg-zinc-800 dark:data-active:text-zinc-100"
+              className="rounded-full h-7 text-xs font-semibold data-active:bg-white data-active:text-zinc-900 dark:data-active:bg-zinc-800 dark:data-active:text-zinc-100 data-active:shadow-sm"
             >
               Sign In
             </TabsTrigger>
             <TabsTrigger 
               value="signup" 
-              className="py-1.5 text-xs font-semibold data-active:bg-white data-active:text-zinc-900 dark:data-active:bg-zinc-800 dark:data-active:text-zinc-100"
+              className="rounded-full h-7 text-xs font-semibold data-active:bg-white data-active:text-zinc-900 dark:data-active:bg-zinc-800 dark:data-active:text-zinc-100 data-active:shadow-sm"
             >
               Create Account
             </TabsTrigger>
