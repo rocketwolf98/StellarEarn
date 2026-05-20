@@ -23,10 +23,10 @@ export function BountyListItem({ bounty }: BountyListItemProps) {
         <div className="mb-0.5 truncate text-[13.5px] font-semibold text-stellar-black dark:text-stellar-white group-hover:text-stellar-navy dark:group-hover:text-stellar-yellow transition-colors duration-200">
           {bounty.title}
         </div>
-        <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-stellar-gray/90 dark:text-stellar-gray/70">
-          <span className="font-medium text-stellar-black/70 dark:text-stellar-white/70">{bounty.org}</span>
+        <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground dark:text-stellar-gray/70">
+          <span className="font-medium text-stellar-black/80 dark:text-stellar-white/80">{bounty.org}</span>
           <CheckBadgeIcon className="w-3.5 h-3.5 text-stellar-teal" />
-          <span className="text-stellar-gray/30 dark:text-stellar-gray/20">|</span>
+          <span className="text-stellar-black/20 dark:text-stellar-gray/30">|</span>
           <Badge
             variant="outline"
             className={`h-5 px-2 text-[10px] font-medium transition-colors duration-200 ${
@@ -37,11 +37,11 @@ export function BountyListItem({ bounty }: BountyListItemProps) {
           >
             {bounty.type.charAt(0).toUpperCase() + bounty.type.slice(1)}
           </Badge>
-          <span className="text-stellar-gray/30 dark:text-stellar-gray/20">|</span>
-          <span>{bounty.due}</span>
-          <span className="text-stellar-gray/30 dark:text-stellar-gray/20">|</span>
-          <div className="flex items-center gap-1">
-            <ChatBubbleLeftIcon className="w-3.5 h-3.5 text-stellar-gray/80 dark:text-stellar-gray/60" />
+          <span className="text-stellar-black/20 dark:text-stellar-gray/30">|</span>
+          <span className="font-medium text-stellar-black/60 dark:text-stellar-gray/70">{bounty.due}</span>
+          <span className="text-stellar-black/20 dark:text-stellar-gray/30">|</span>
+          <div className="flex items-center gap-1 font-medium text-stellar-black/60 dark:text-stellar-gray/70">
+            <ChatBubbleLeftIcon className="w-3.5 h-3.5 text-stellar-black/30 dark:text-stellar-gray/50" />
             <span>{bounty.submissions}</span>
           </div>
           {bounty.featured && (
@@ -62,7 +62,7 @@ export function BountyListItem({ bounty }: BountyListItemProps) {
         <span className="text-[12.5px] font-bold text-stellar-black dark:text-stellar-white group-hover:text-stellar-teal transition-colors duration-200">
           {bounty.prize.toLocaleString()}
         </span>
-        <span className="text-[10px] text-stellar-gray/90 group-hover:text-stellar-teal/80 transition-colors duration-200 font-semibold">PHP</span>
+        <span className="text-[10px] text-stellar-black/50 dark:text-stellar-gray/70 group-hover:text-stellar-teal/80 transition-colors duration-200 font-bold">PHP</span>
       </div>
     </Link>
   );

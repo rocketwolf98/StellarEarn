@@ -109,12 +109,12 @@ function StellarEarnDashboard() {
             <span className="text-[15px] font-semibold text-foreground">Browse Opportunities</span>
 
             <Tabs value={activeTab} onValueChange={handleTabChange} className="ml-2">
-              <TabsList className="h-9 bg-muted/30 backdrop-blur-md border border-border rounded-full p-1 gap-1.5 flex items-center">
+              <TabsList className="h-9 bg-zinc-100 dark:bg-zinc-900 rounded-full p-1 gap-1 flex items-center">
                 {(["all", "bounties", "projects"] as const).map((t) => (
                   <TabsTrigger
                     key={t}
                     value={t}
-                    className="h-7 rounded-full px-4 text-xs font-semibold capitalize text-muted-foreground transition-all duration-200 border border-transparent hover:bg-card/45 hover:text-foreground cursor-pointer data-[state=active]:bg-card data-[state=active]:text-stellar-teal data-[state=active]:border-stellar-yellow data-[state=active]:shadow-sm"
+                    className="h-7 rounded-full px-4 text-xs font-semibold capitalize text-zinc-500 dark:text-zinc-400 transition-all duration-200 hover:text-zinc-900 dark:hover:text-zinc-100 cursor-pointer data-[state=active]:bg-white data-[state=active]:text-zinc-900 dark:data-[state=active]:bg-zinc-800 dark:data-[state=active]:text-zinc-100 data-[state=active]:shadow-sm"
                   >
                     {t}
                   </TabsTrigger>
