@@ -1,4 +1,5 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { CurrencyDollarIcon } from "@heroicons/react/24/solid";
 
 interface EarnerRowProps {
   name: string;
@@ -20,7 +21,7 @@ export function EarnerRow({ name, task, prize, token, initials, color }: EarnerR
         <div className="truncate text-[10px] text-zinc-400">{task}</div>
       </div>
       <div className="flex shrink-0 items-center gap-0.5">
-        <span className="text-[11px] text-green-500">⊙</span>
+        <CurrencyDollarIcon className="w-3.5 h-3.5 text-green-500" />
         <span className="text-[12px] font-semibold text-zinc-950">{prize}</span>
         <span className="text-[10px] text-zinc-400">{token}</span>
       </div>
