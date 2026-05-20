@@ -42,15 +42,15 @@ export function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 flex h-14 items-center justify-between border-b border-zinc-200/50 bg-white/70 backdrop-blur-md px-6">
+      <header className="sticky top-0 z-50 flex h-14 items-center justify-between border-b border-border bg-background/80 backdrop-blur-md px-6">
         <div className="flex items-center">
-          <Link href="/" className="mr-7 flex items-center gap-2 text-[15px] font-semibold text-zinc-950 no-underline">
-            <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-[#FDDA24] text-[10px] font-bold text-[#0F0F0F]">
+          <Link href="/" className="mr-7 flex items-center gap-2 text-[15px] font-semibold text-foreground no-underline">
+            <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-stellar-yellow text-[10px] font-bold text-stellar-black">
               SE
             </div>
             <span>StellarEarn</span>
           </Link>
-          <nav className="flex">
+          <nav className="flex gap-1">
             {[
               { label: "Bounties", href: "/?tab=bounties" },
               { label: "Projects", href: "/?tab=projects" },
@@ -59,7 +59,7 @@ export function Header() {
               <Link
                 key={item.label}
                 href={item.href}
-                className="flex h-14 items-center border-b-2 border-transparent px-3 text-[13px] text-zinc-500 no-underline hover:text-zinc-950"
+                className="flex h-14 items-center border-b-2 border-transparent px-3 text-[13px] font-medium text-muted-foreground no-underline hover:text-foreground hover:border-stellar-teal/60 transition-all duration-200"
               >
                 {item.label}
               </Link>
@@ -67,22 +67,22 @@ export function Header() {
           </nav>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="ghost" className="h-8 gap-1.5 text-xs text-zinc-500 hover:bg-zinc-100">
+          <Button variant="ghost" className="h-8 gap-1.5 text-xs text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer transition-all duration-200">
             Become a Sponsor <span className="inline-block h-1.5 w-1.5 rounded-full bg-green-500" />
           </Button>
-
+ 
           {walletConnected || username ? (
             <>
-              <div className="flex items-center gap-2 rounded-full border border-zinc-200 bg-zinc-50/50 pl-3.5 pr-2 py-0.5 dark:border-zinc-800 dark:bg-zinc-900/50">
+              <div className="flex items-center gap-2 rounded-full border border-border bg-card pl-3.5 pr-2 py-0.5">
                 <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">
+                <span className="text-xs font-semibold text-foreground">
                   {username ? `@${username}` : `${walletAddress?.substring(0, 6)}...${walletAddress?.slice(-4)}`}
                 </span>
                 {role && (
                   <span className={`rounded-md px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider ${
                     role === "sponsor" 
-                      ? "bg-[#FDDA24]/10 text-[#d4b51c] border border-[#FDDA24]/20" 
-                      : "bg-[#00A7B5]/10 text-[#00A7B5] border border-[#00A7B5]/20"
+                      ? "bg-stellar-yellow/10 text-stellar-yellow border border-stellar-yellow/20" 
+                      : "bg-stellar-teal/10 text-stellar-teal border border-stellar-teal/20"
                   }`}>
                     {role}
                   </span>
@@ -90,7 +90,7 @@ export function Header() {
               </div>
               <Button
                 variant="ghost"
-                className="h-8 text-xs text-zinc-500 hover:bg-zinc-100 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-zinc-900"
+                className="h-8 text-xs text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer transition-all duration-200"
                 onClick={handleDisconnect}
               >
                 Disconnect
@@ -100,7 +100,7 @@ export function Header() {
             <>
               <Button
                 variant="outline"
-                className="h-8 text-xs text-zinc-950 dark:text-zinc-50 hover:bg-zinc-50"
+                className="h-8 text-xs border-border text-foreground hover:bg-muted cursor-pointer transition-all duration-200"
                 onClick={() => {
                   setAuthModalTab("signin");
                   setIsAuthModalOpen(true);
@@ -109,7 +109,7 @@ export function Header() {
                 Login
               </Button>
               <Button 
-                className="h-8 bg-[#FDDA24] text-xs font-semibold text-[#0F0F0F] hover:bg-[#ebd020]"
+                className="h-8 bg-stellar-yellow text-xs font-semibold text-stellar-black hover:bg-stellar-yellow/90 hover:-translate-y-[1px] hover:shadow-sm cursor-pointer transition-all duration-200"
                 onClick={() => {
                   setAuthModalTab("signup");
                   setIsAuthModalOpen(true);
