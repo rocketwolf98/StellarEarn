@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { AuthModal } from "@/components/features/auth-modal";
 import Link from "next/link";
+import { Sun, Moon } from "lucide-react";
+import { useTheme } from "next-themes";
 
 export function Header() {
   const [walletConnected, setWalletConnected] = useState(false);
@@ -15,7 +17,14 @@ export function Header() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalTab, setAuthModalTab] = useState<"signin" | "signup">("signin");
 
+  const [mounted, setMounted] = useState(false);
+  const { setTheme, resolvedTheme } = useTheme();
+
   useEffect(() => {
+    const timer = setTimeout(() => {
+      setMounted(true);
+    }, 0);
+
     const handleOpenAuth = (e: Event) => {
       const customEvent = e as CustomEvent<{ tab?: "signin" | "signup" }>;
       if (customEvent.detail?.tab) {
@@ -24,7 +33,10 @@ export function Header() {
       setIsAuthModalOpen(true);
     };
     window.addEventListener("open-auth-modal", handleOpenAuth);
-    return () => window.removeEventListener("open-auth-modal", handleOpenAuth);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("open-auth-modal", handleOpenAuth);
+    };
   }, []);
 
   const handleAuthSuccess = (
@@ -79,6 +91,21 @@ export function Header() {
           </nav>
         </div>
         <div className="flex items-center gap-2">
+          {/* Theme Toggle */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer transition-all duration-200"
+            onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+            aria-label="Toggle theme"
+          >
+            {mounted && resolvedTheme === "dark" ? (
+              <Sun className="h-4 w-4 text-stellar-yellow animate-spin-slow" />
+            ) : (
+              <Moon className="h-4 w-4" />
+            )}
+          </Button>
+
           <Button variant="ghost" className="h-8 gap-1.5 text-xs text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer transition-all duration-200">
             Become a Sponsor <span className="inline-block h-1.5 w-1.5 rounded-full bg-green-500" />
           </Button>

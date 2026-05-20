@@ -12,7 +12,7 @@ function Card({
       data-slot="card"
       data-size={size}
       className={cn(
-        "group/card flex flex-col gap-4 overflow-hidden rounded-xl bg-white/60 backdrop-blur-md border border-zinc-200/30 shadow-sm transition-all duration-200 hover:bg-white/75 hover:shadow-md hover:border-zinc-200/50 py-4 text-sm text-card-foreground has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:gap-3 data-[size=sm]:py-3 data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl",
+        "group/card flex flex-col gap-4 overflow-hidden rounded-xl bg-card/60 dark:bg-[#151515]/60 backdrop-blur-md border border-border/30 dark:border-border/15 shadow-sm transition-all duration-200 hover:bg-card/75 dark:hover:bg-[#151515]/75 hover:shadow-md hover:border-border/50 dark:hover:border-border/25 py-4 text-sm text-card-foreground has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:gap-3 data-[size=sm]:py-3 data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl",
         className
       )}
       {...props}
@@ -84,7 +84,7 @@ function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card-footer"
       className={cn(
-        "flex items-center rounded-b-xl border-t border-zinc-200/30 bg-white/20 p-4 group-data-[size=sm]/card:p-3",
+        "flex items-center rounded-b-xl border-t border-border/30 dark:border-border/15 bg-card/20 dark:bg-[#151515]/20 p-4 group-data-[size=sm]/card:p-3",
         className
       )}
       {...props}

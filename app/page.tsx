@@ -74,7 +74,10 @@ function StellarEarnDashboard() {
   };
 
   const filteredBounties = BOUNTIES.filter((b) => {
-    const tabOk = activeTab === "all" || activeTab === "bounties";
+    const tabOk =
+      activeTab === "all" ||
+      (activeTab === "bounties" && b.type === "bounty") ||
+      (activeTab === "projects" && b.type === "project");
     const skillOk = activeSkill === "all" || b.skill === activeSkill;
     return tabOk && skillOk;
   });

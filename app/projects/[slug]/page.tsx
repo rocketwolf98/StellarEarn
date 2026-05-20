@@ -27,7 +27,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   }
 
   return (
-    <div className="bg-slate-50/20 pb-20 backdrop-blur-[2px] min-h-[calc(100vh-3.5rem)]">
+    <div className="bg-slate-50/10 dark:bg-zinc-950/20 pb-20 backdrop-blur-[2px] min-h-[calc(100vh-3.5rem)]">
       <BountyDetail bounty={bounty} />
     </div>
   );
