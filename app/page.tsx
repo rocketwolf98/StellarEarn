@@ -71,6 +71,10 @@ function StellarEarnDashboard() {
     <div className="pb-20 backdrop-blur-[1px]">
       {/* ── Hero ── */}
       <div className="relative flex min-h-[180px] items-center justify-between overflow-hidden bg-stellar-cosmic px-[8vw] py-8 rounded-2xl mb-6 border border-white/15 shadow-xl mx-[1vw] my-[1vh] hover:shadow-2xl transition-all duration-300">
+        {/* Premium Unsplash cosmic network overlay with 50% transparency */}
+        <div 
+          className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80')] bg-cover bg-center opacity-50 mix-blend-overlay pointer-events-none" 
+        />
         {/* Layered textures inside Hero */}
         <div className="absolute inset-0 bg-stellar-noise-direct opacity-[0.015] pointer-events-none" />
         <div className="relative z-10 max-w-[480px]">
