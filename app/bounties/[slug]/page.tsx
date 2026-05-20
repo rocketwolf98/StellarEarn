@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { BOUNTIES } from "@/lib/data";
 import { BountyDetail } from "@/components/features/bounty-detail";
 
-interface ProjectPageProps {
+interface BountyPageProps {
   params: Promise<{ slug: string }>;
 }
 
@@ -10,17 +10,17 @@ interface ProjectPageProps {
  * Pre-generate paths for static rendering at build time.
  */
 export async function generateStaticParams() {
-  return BOUNTIES.filter(b => b.type === "project").map((bounty) => ({
+  return BOUNTIES.filter(b => b.type === "bounty").map((bounty) => ({
     slug: bounty.slug,
   }));
 }
 
 /**
- * Project Detail Page Segment.
+ * Bounty Detail Page Segment.
  */
-export default async function ProjectPage({ params }: ProjectPageProps) {
+export default async function BountyPage({ params }: BountyPageProps) {
   const { slug } = await params;
-  const bounty = BOUNTIES.find((b) => b.slug === slug && b.type === "project");
+  const bounty = BOUNTIES.find((b) => b.slug === slug && b.type === "bounty");
 
   if (!bounty) {
     notFound();
