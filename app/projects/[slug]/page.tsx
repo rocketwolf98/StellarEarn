@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { BOUNTIES } from "@/lib/data";
 import { BountyDetail } from "@/components/features/bounty-detail";
 
-interface OpportunityPageProps {
+interface ProjectPageProps {
   params: Promise<{ slug: string }>;
 }
 
@@ -16,9 +16,9 @@ export async function generateStaticParams() {
 }
 
 /**
- * Opportunity Detail Page Segment.
+ * Project Detail Page Segment.
  */
-export default async function OpportunityPage({ params }: OpportunityPageProps) {
+export default async function ProjectPage({ params }: ProjectPageProps) {
   const { slug } = await params;
   const bounty = BOUNTIES.find((b) => b.slug === slug);
 
