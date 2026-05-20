@@ -25,6 +25,7 @@ import {
   CheckBadgeIcon,
   ArrowRightIcon
 } from "@heroicons/react/24/solid";
+import { InformationCircleIcon } from "@heroicons/react/24/outline";
 
 function StellarEarnDashboard() {
   const router = useRouter();
@@ -149,9 +150,19 @@ function StellarEarnDashboard() {
 
           {/* Bounty rows */}
           <div className="flex flex-col">
-            {filteredBounties.map((b) => (
-              <BountyListItem key={b.id} bounty={b} />
-            ))}
+            {filteredBounties.length > 0 ? (
+              filteredBounties.map((b) => (
+                <BountyListItem key={b.id} bounty={b} />
+              ))
+            ) : (
+              <div className="flex flex-col items-center justify-center py-20 px-4 text-center animate-in fade-in duration-300">
+                <InformationCircleIcon className="mb-3.5 h-14 w-14 text-zinc-300 stroke-[1.25]" />
+                <h4 className="text-[16px] font-semibold text-zinc-600">No opportunities found</h4>
+                <p className="mt-1.5 text-[12px] text-zinc-400 max-w-[320px] leading-relaxed">
+                  We don&apos;t have any relevant opportunities for the current filters.
+                </p>
+              </div>
+            )}
           </div>
 
           <Button variant="outline" className="mt-4 w-full text-[13px] text-zinc-500">
