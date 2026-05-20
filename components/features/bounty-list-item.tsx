@@ -10,7 +10,7 @@ interface BountyListItemProps {
 export function BountyListItem({ bounty }: BountyListItemProps) {
   return (
     <Link
-      href={`/projects/${bounty.slug}`}
+      href={bounty.type === "bounty" ? `/bounties/${bounty.slug}` : `/projects/${bounty.slug}`}
       className="group relative overflow-hidden flex cursor-pointer items-center gap-3 -mx-2 rounded-xl border border-transparent py-3 px-3.5 bg-transparent hover:bg-card/70 hover:backdrop-blur-md hover:border-border hover:shadow-[0_4px_12px_rgba(15,15,15,0.03)] dark:hover:shadow-[0_4px_12px_rgba(0,0,0,0.3)] hover:translate-y-[-1px] transition-all duration-200 decoration-transparent"
     >
       <div

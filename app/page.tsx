@@ -2,6 +2,7 @@
 
 import { useState, useCallback, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -192,7 +193,7 @@ function StellarEarnDashboard() {
 
             <div className="flex flex-col">
               {GRANTS.map((g) => (
-                <div key={g.id} className="flex -mx-2 items-center gap-3 rounded-xl border border-transparent p-3 hover:bg-card/75 hover:backdrop-blur-sm hover:border-border hover:shadow-[0_4px_12px_rgba(15,15,15,0.03)] cursor-pointer transition-all duration-200 decoration-transparent">
+                <Link key={g.id} href={`/grants/${g.id}`} className="flex -mx-2 items-center gap-3 rounded-xl border border-transparent p-3 hover:bg-card/75 hover:backdrop-blur-sm hover:border-border hover:shadow-[0_4px_12px_rgba(15,15,15,0.03)] cursor-pointer transition-all duration-200 decoration-transparent">
                   <div
                     className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-border text-[11px] font-semibold text-white"
                     style={{ background: g.bg }}
@@ -218,7 +219,7 @@ function StellarEarnDashboard() {
                     <CurrencyDollarIcon className="h-4 w-4 text-green-500" />
                     <span className="text-[13px] font-semibold text-foreground">{g.prize}</span>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
             <Button variant="outline" className="mt-4 w-full text-[13px] text-muted-foreground border-border hover:bg-muted cursor-pointer transition-all duration-200">
