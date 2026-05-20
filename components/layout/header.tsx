@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { AuthModal } from "@/components/features/auth-modal";
+import Link from "next/link";
 
 export function Header() {
   const [walletConnected, setWalletConnected] = useState(false);
@@ -43,21 +44,25 @@ export function Header() {
     <>
       <header className="sticky top-0 z-50 flex h-14 items-center justify-between border-b border-zinc-200/50 bg-white/70 backdrop-blur-md px-6">
         <div className="flex items-center">
-          <a href="#" className="mr-7 flex items-center gap-2 text-[15px] font-semibold text-zinc-950 no-underline">
+          <Link href="/" className="mr-7 flex items-center gap-2 text-[15px] font-semibold text-zinc-950 no-underline">
             <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-[#FDDA24] text-[10px] font-bold text-[#0F0F0F]">
               SE
             </div>
             <span>StellarEarn</span>
-          </a>
+          </Link>
           <nav className="flex">
-            {["Bounties", "Projects", "Grants"].map((item) => (
-              <a
-                key={item}
-                href="#"
+            {[
+              { label: "Bounties", href: "/?tab=bounties" },
+              { label: "Projects", href: "/?tab=projects" },
+              { label: "Grants", href: "/#grants" }
+            ].map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
                 className="flex h-14 items-center border-b-2 border-transparent px-3 text-[13px] text-zinc-500 no-underline hover:text-zinc-950"
               >
-                {item}
-              </a>
+                {item.label}
+              </Link>
             ))}
           </nav>
         </div>

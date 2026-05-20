@@ -1,17 +1,17 @@
 import { Badge } from "@/components/ui/badge";
 import type { Bounty } from "@/lib/data";
 import { CheckBadgeIcon, ChatBubbleLeftIcon, StarIcon, CurrencyDollarIcon } from "@heroicons/react/24/solid";
+import Link from "next/link";
 
 interface BountyListItemProps {
   bounty: Bounty;
-  onClick: () => void;
 }
 
-export function BountyListItem({ bounty, onClick }: BountyListItemProps) {
+export function BountyListItem({ bounty }: BountyListItemProps) {
   return (
-    <div
-      className="flex cursor-pointer items-center gap-3 -mx-2 rounded-xl border border-transparent py-3 px-3.5 hover:bg-white/50 hover:backdrop-blur-sm hover:border-zinc-200/30 hover:shadow-sm transition-all duration-200"
-      onClick={onClick}
+    <Link
+      href={`/opportunities/${bounty.slug}`}
+      className="flex cursor-pointer items-center gap-3 -mx-2 rounded-xl border border-transparent py-3 px-3.5 hover:bg-white/50 hover:backdrop-blur-sm hover:border-zinc-200/30 hover:shadow-sm transition-all duration-200 decoration-transparent"
     >
       <div
         className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-zinc-200 text-[11px] font-semibold"
@@ -61,6 +61,6 @@ export function BountyListItem({ bounty, onClick }: BountyListItemProps) {
         </span>
         <span className="text-[11px] text-zinc-400">PHP</span>
       </div>
-    </div>
+    </Link>
   );
 }
