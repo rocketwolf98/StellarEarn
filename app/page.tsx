@@ -61,6 +61,13 @@ function StellarEarnDashboard() {
     router.push(qs ? `/?${qs}` : "/", { scroll: false });
   };
 
+  const handleSurpriseMe = () => {
+    if (BOUNTIES.length === 0) return;
+    const randomIndex = Math.floor(Math.random() * BOUNTIES.length);
+    const randomItem = BOUNTIES[randomIndex];
+    router.push(randomItem.type === "bounty" ? `/bounties/${randomItem.slug}` : `/projects/${randomItem.slug}`);
+  };
+
   const filteredBounties = BOUNTIES.filter((b) => {
     const tabOk = activeTab === "all" || activeTab === "bounties";
     const skillOk = activeSkill === "all" || b.skill === activeSkill;
@@ -248,20 +255,24 @@ function StellarEarnDashboard() {
 
           {/* Promo card */}
           <Card className="mb-6 overflow-hidden border-border bg-card shadow-sm hover:shadow-md transition-all duration-300">
-            <div className="relative bg-stellar-fluid flex items-center justify-center gap-2 p-5 text-xl font-extrabold tracking-widest text-white border-b border-black/15 shadow-sm">
+            <div className="relative bg-[url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80')] bg-cover bg-center flex items-center justify-center gap-2 p-5 text-xl font-extrabold tracking-widest text-white border-b border-black/15 shadow-sm">
+              <div className="absolute inset-0 bg-stellar-navy/40 backdrop-blur-[1px] pointer-events-none" />
               <div className="absolute inset-0 bg-stellar-noise-direct opacity-[0.015] pointer-events-none" />
               <SparklesIcon className="relative z-10 h-5 w-5 text-stellar-yellow animate-pulse" />
               <span className="relative z-10">STELLAR EARN</span>
             </div>
             <div className="p-3.5">
-              <div className="mb-1.5 text-[13px] font-semibold leading-tight text-foreground">
-                Are you a dev? We have prizes worth ₱430,000+ for you
+              <div className="mb-1.5 text-[13.5px] font-bold leading-snug text-foreground">
+                Welcome to StellarEarn!
               </div>
               <div className="mb-3 text-[11px] leading-relaxed text-muted-foreground">
-                Submit to any StellarEarn side tracks and stand to win. Deadline May 31.
+                Your gateway to native Stellar bounties and grants. Build high-impact solutions, earn PHP rewards directly to your wallet, and grow the ecosystem.
               </div>
-              <Button className="h-8 w-full bg-stellar-yellow text-xs font-semibold text-stellar-black hover:bg-stellar-yellow/90 hover:-translate-y-[0.5px] hover:shadow-sm cursor-pointer transition-all duration-200">
-                View Tracks
+              <Button 
+                onClick={handleSurpriseMe}
+                className="h-8 w-full bg-stellar-yellow text-xs font-semibold text-stellar-black hover:bg-stellar-yellow/90 hover:-translate-y-[0.5px] hover:shadow-sm cursor-pointer transition-all duration-200"
+              >
+                Surprise Me!
               </Button>
             </div>
           </Card>
