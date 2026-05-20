@@ -13,6 +13,22 @@
 # testing
 /coverage
 
+# AI agents
+.agent
+.agents
+.claude
+.cursor
+.windsurf
+.kiro
+.opencode
+.roo
+.codex
+.qoder
+.gemini
+.trae
+.continue
+.codebuddy
+
 # next.js
 /.next/
 /out/
@@ -39,3 +55,4 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
