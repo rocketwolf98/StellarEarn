@@ -68,6 +68,11 @@ function StellarEarnDashboard() {
     router.push(randomItem.type === "bounty" ? `/bounties/${randomItem.slug}` : `/projects/${randomItem.slug}`);
   };
 
+  const handleSignUpClick = () => {
+    const event = new CustomEvent("open-auth-modal", { detail: { tab: "signup" } });
+    window.dispatchEvent(event);
+  };
+
   const filteredBounties = BOUNTIES.filter((b) => {
     const tabOk = activeTab === "all" || activeTab === "bounties";
     const skillOk = activeSkill === "all" || b.skill === activeSkill;
@@ -84,18 +89,20 @@ function StellarEarnDashboard() {
         />
         {/* Layered textures inside Hero */}
         <div className="absolute inset-0 bg-stellar-noise-direct opacity-[0.015] pointer-events-none" />
-        <div className="relative z-10 max-w-[480px]">
+        <div className="relative z-10 max-w-[560px]">
           <div className="mb-2 text-stellar-yellow">
           </div>
-          <h2 className="mb-2 text-2xl font-bold text-white tracking-wide">Become a Sponsor</h2>
-          <p className="mb-4 text-[13px] leading-relaxed text-zinc-200">
-            Reach 50,000+ top-tier Stellar builders in under 5 clicks. Get high-quality work done across content, development, and design.
+          <h2 className="mb-3 text-3xl font-extrabold text-white tracking-wide">Get into StellarEarn</h2>
+          <p className="mb-5 text-[13.5px] leading-relaxed text-zinc-200">
+            {"Claim high-value opportunities and fast-track your skills. Whether you're a designer, builder, Web2 developer, Web3 pioneer, or a tech enthusiast—start showcase-building and earning native rewards directly to your wallet."}
           </p>
           <div className="flex items-center gap-4">
-            <Button className="h-9 bg-stellar-white text-[13px] font-semibold text-stellar-black hover:bg-white hover:-translate-y-[1px] hover:shadow-md cursor-pointer transition-all duration-200">
+            <Button 
+              onClick={handleSignUpClick}
+              className="h-9 bg-stellar-white text-[13px] font-semibold text-stellar-black hover:bg-white hover:-translate-y-[1px] hover:shadow-md cursor-pointer transition-all duration-200"
+            >
               Get Started
             </Button>
-            <span className="text-xs text-zinc-300/80">Join 2,450+ others</span>
           </div>
         </div>
 

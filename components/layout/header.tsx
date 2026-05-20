@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { AuthModal } from "@/components/features/auth-modal";
@@ -14,6 +14,18 @@ export function Header() {
   
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalTab, setAuthModalTab] = useState<"signin" | "signup">("signin");
+
+  useEffect(() => {
+    const handleOpenAuth = (e: Event) => {
+      const customEvent = e as CustomEvent<{ tab?: "signin" | "signup" }>;
+      if (customEvent.detail?.tab) {
+        setAuthModalTab(customEvent.detail.tab);
+      }
+      setIsAuthModalOpen(true);
+    };
+    window.addEventListener("open-auth-modal", handleOpenAuth);
+    return () => window.removeEventListener("open-auth-modal", handleOpenAuth);
+  }, []);
 
   const handleAuthSuccess = (
     address?: string, 
