@@ -1,17 +1,21 @@
 import {
+  Account,
   Contract,
-  TransactionBuilder,
-  Networks,
-  Keypair,
   rpc,
+  Networks,
+  TransactionBuilder,
+  BASE_FEE,
+  nativeToScVal,
 } from "@stellar/stellar-sdk";
 
 const RPC_URL = "https://soroban-testnet.stellar.org";
-
-// Replace with your deployed contract ID
-const CONTRACT_ID = "YOUR_CONTRACT_ID_HERE";
-
 const server = new rpc.Server(RPC_URL);
+
+const CONTRACT_ID = "YOUR_CONTRACT_ID";
+const READ_ONLY_ACCOUNT = new Account(
+  "GBZXN7PIRZGNMHGA6DK6MY6AC72O453END5TPHJUIXQ3OSBXUPJYNO3S",
+  "0"
+);
 
 export class BountyClient {
   contract: Contract;
@@ -21,164 +25,161 @@ export class BountyClient {
   }
 
   // -------------------------
-  // INIT CONTRACT
-  // -------------------------
-  async init(sourceKeypair: Keypair) {
-    const tx = await server.prepareTransaction(
-      new TransactionBuilder(await server.getAccount(sourceKeypair.publicKey()), {
-        fee: "100",
-        networkPassphrase: Networks.TESTNET,
-      })
-        .addOperation(this.contract.call("init"))
-        .setTimeout(30)
-        .build()
-    );
-
-    tx.sign(sourceKeypair);
-    return server.sendTransaction(tx);
-  }
-
-  // -------------------------
-  // CREATE BOUNTY
+  // CREATE BOUNTY (correct Soroban flow)
   // -------------------------
   async createBounty(
-    sponsor: Keypair,
+    sponsor: string,
     token: string,
     prize: string,
     deadline: number
   ) {
+    const sponsorAccount = await server.getAccount(sponsor);
     const tx = await server.prepareTransaction(
-      new TransactionBuilder(await server.getAccount(sponsor.publicKey()), {
-        fee: "100",
+      new TransactionBuilder(sponsorAccount, {
+        fee: BASE_FEE,
         networkPassphrase: Networks.TESTNET,
       })
         .addOperation(
           this.contract.call(
             "create_bounty",
-            sponsor.publicKey(),
-            token,
-            prize,
-            deadline
+            nativeToScVal(sponsor),
+            nativeToScVal(token),
+            nativeToScVal(prize),
+            nativeToScVal(deadline)
           )
         )
         .setTimeout(30)
         .build()
     );
 
-    tx.sign(sponsor);
-    const res = await server.sendTransaction(tx);
-    return res;
+    return tx;
   }
 
   // -------------------------
-  // SUBMIT WORK
+  // SUBMIT
   // -------------------------
   async submit(
-    participant: Keypair,
+    participant: string,
     bountyId: number,
     workHash: string
   ) {
+    const participantAccount = await server.getAccount(participant);
     const tx = await server.prepareTransaction(
-      new TransactionBuilder(await server.getAccount(participant.publicKey()), {
-        fee: "100",
+      new TransactionBuilder(participantAccount, {
+        fee: BASE_FEE,
         networkPassphrase: Networks.TESTNET,
       })
         .addOperation(
           this.contract.call(
             "submit",
-            bountyId,
-            participant.publicKey(),
-            workHash
+            nativeToScVal(bountyId),
+            nativeToScVal(participant),
+            nativeToScVal(workHash)
           )
         )
         .setTimeout(30)
         .build()
     );
 
-    tx.sign(participant);
-    return server.sendTransaction(tx);
+    return tx;
   }
 
   // -------------------------
   // SELECT WINNER
   // -------------------------
   async selectWinner(
-    sponsor: Keypair,
+    sponsor: string,
     bountyId: number,
     winner: string
   ) {
+    const sponsorAccount = await server.getAccount(sponsor);
     const tx = await server.prepareTransaction(
-      new TransactionBuilder(await server.getAccount(sponsor.publicKey()), {
-        fee: "100",
+      new TransactionBuilder(sponsorAccount, {
+        fee: BASE_FEE,
         networkPassphrase: Networks.TESTNET,
       })
         .addOperation(
           this.contract.call(
             "select_winner",
-            bountyId,
-            sponsor.publicKey(),
-            winner
+            nativeToScVal(bountyId),
+            nativeToScVal(sponsor),
+            nativeToScVal(winner)
           )
         )
         .setTimeout(30)
         .build()
     );
 
-    tx.sign(sponsor);
-    return server.sendTransaction(tx);
+    return tx;
   }
 
   // -------------------------
-  // CANCEL BOUNTY
+  // CANCEL
   // -------------------------
   async cancel(
-    sponsor: Keypair,
+    sponsor: string,
     bountyId: number
   ) {
+    const sponsorAccount = await server.getAccount(sponsor);
     const tx = await server.prepareTransaction(
-      new TransactionBuilder(await server.getAccount(sponsor.publicKey()), {
-        fee: "100",
+      new TransactionBuilder(sponsorAccount, {
+        fee: BASE_FEE,
         networkPassphrase: Networks.TESTNET,
       })
         .addOperation(
           this.contract.call(
             "cancel",
-            bountyId,
-            sponsor.publicKey()
+            nativeToScVal(bountyId),
+            nativeToScVal(sponsor)
           )
         )
         .setTimeout(30)
         .build()
     );
 
-    tx.sign(sponsor);
-    return server.sendTransaction(tx);
+    return tx;
   }
 
   // -------------------------
-  // VIEW: GET BOUNTY
+  // READ ONLY (CORRECT WAY)
   // -------------------------
   async getBounty(id: number) {
-    return server.simulateTransaction(
-      this.contract.call("get_bounty", id)
-    );
+    const tx = new TransactionBuilder(READ_ONLY_ACCOUNT, {
+      fee: BASE_FEE,
+      networkPassphrase: Networks.TESTNET,
+    })
+      .addOperation(
+        this.contract.call("get_bounty", nativeToScVal(id))
+      )
+      .setTimeout(30)
+      .build();
+
+    return server.simulateTransaction(tx);
   }
 
-  // -------------------------
-  // VIEW: SUBMISSIONS
-  // -------------------------
   async getSubmissions(id: number) {
-    return server.simulateTransaction(
-      this.contract.call("get_submissions", id)
-    );
+    const tx = new TransactionBuilder(READ_ONLY_ACCOUNT, {
+      fee: BASE_FEE,
+      networkPassphrase: Networks.TESTNET,
+    })
+      .addOperation(
+        this.contract.call("get_submissions", nativeToScVal(id))
+      )
+      .setTimeout(30)
+      .build();
+
+    return server.simulateTransaction(tx);
   }
 
-  // -------------------------
-  // PLATFORM FEES
-  // -------------------------
   async getFees() {
-    return server.simulateTransaction(
-      this.contract.call("platform_fees")
-    );
+    const tx = new TransactionBuilder(READ_ONLY_ACCOUNT, {
+      fee: BASE_FEE,
+      networkPassphrase: Networks.TESTNET,
+    })
+      .addOperation(this.contract.call("platform_fees"))
+      .setTimeout(30)
+      .build();
+
+    return server.simulateTransaction(tx);
   }
 }
