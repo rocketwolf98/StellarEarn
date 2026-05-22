@@ -106,12 +106,31 @@ export function Header() {
             )}
           </Button>
 
-          <Button variant="ghost" className="h-8 gap-1.5 text-xs text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer transition-all duration-200">
-            Become a Sponsor <span className="inline-block h-1.5 w-1.5 rounded-full bg-green-500" />
-          </Button>
+          <Link
+            href="/sponsor/new"
+            className="flex h-8 items-center gap-1.5 rounded-md px-3 text-xs font-semibold text-muted-foreground hover:bg-muted hover:text-foreground transition-all duration-200"
+          >
+            Become a Sponsor <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
+          </Link>
  
           {walletConnected || username ? (
             <>
+              {/* My Submissions link */}
+              <Link
+                href="/profile/submissions"
+                className="hidden sm:flex h-8 items-center px-3 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors duration-200 rounded-md hover:bg-muted"
+              >
+                My Submissions
+              </Link>
+              {/* Post Bounty CTA (sponsor role) */}
+              {role === "sponsor" && (
+                <Link
+                  href="/sponsor/new"
+                  className="flex h-8 items-center px-3 text-xs font-bold rounded-md bg-stellar-yellow text-stellar-black hover:bg-stellar-yellow/90 hover:-translate-y-[1px] hover:shadow-sm transition-all duration-200"
+                >
+                  + Post Bounty
+                </Link>
+              )}
               <div className="flex items-center gap-2 rounded-full border border-border bg-card pl-3.5 pr-2 py-0.5">
                 <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 <span className="text-xs font-semibold text-foreground">
