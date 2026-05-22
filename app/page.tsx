@@ -70,7 +70,8 @@ function StarQuestDashboard() {
   useEffect(() => {
     let cancelled = false;
     fetchGigs().then((data) => {
-      if (!cancelled && data.length > 0) setGigs(data);
+      // For MVP preview: Combine DB gigs with mock gigs so we can see a full dashboard
+      if (!cancelled) setGigs([...data, ...MOCK_GIGS]);
       setLoadingGigs(false);
     });
     return () => { cancelled = true; };

@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { BOUNTIES } from "@/lib/data";
+import { BOUNTIES, SUBMISSIONS } from "@/lib/data";
 import { fetchGig } from "@/lib/api";
 import type { GigRow, SubmissionRow } from "@/lib/api";
 import { BountyDetail } from "@/components/features/bounty-detail";
@@ -67,30 +67,28 @@ export default async function BountyPage({ params }: BountyPageProps) {
         sponsor_wallet: null,
         deliverables: mock.deliverables,
       };
-
-      // Seed winner submission from mock if closed
-      if (mock.winner) {
-        submissions = [
-          {
-            id: "mock-winner",
-            gig_id: String(mock.id),
-            worker_user_id: "mock",
-            worker_name: mock.winner.name,
-            submission_url: mock.winner.submissionUrl,
-            description: null,
-            twitter_url: null,
-            status: "approved",
-            submitted_at: new Date().toISOString(),
-            reviewed_at: null,
-            notes: null,
-            approved_at: new Date().toISOString(),
-            approved_by_user_id: null,
-            payout_tx_hash: mock.winner.txHash,
-          },
-        ];
-      }
     }
   }
+
+  // MVP Preview: Merge mock submissions for this slug
+  const mockSubs: SubmissionRow[] = SUBMISSIONS.filter((s) => s.bountySlug === slug).map((s) => ({
+    id: s.id,
+    gig_id: gig?.id ?? "mock",
+    worker_user_id: "mock",
+    worker_name: s.submitterName,
+    submission_url: s.submissionUrl,
+    description: s.description,
+    twitter_url: s.twitterUrl ?? null,
+    status: s.status,
+    submitted_at: s.submittedAt,
+    reviewed_at: null,
+    notes: s.description,
+    approved_at: s.status === "winner" ? s.submittedAt : null,
+    approved_by_user_id: null,
+    payout_tx_hash: s.txHash ?? null,
+  }));
+
+  submissions = [...submissions, ...mockSubs];
 
   if (!gig) {
     notFound();
