@@ -24,7 +24,7 @@ export async function GET(_req: Request, { params }: RouteParams) {
   const { data: submissions, error: subError } = await supabase
     .from("gig_submissions")
     .select(
-      "id, submission_url, description, twitter_url, status, submitted_at, payout_tx_hash, worker_user_id, worker_name, approved_at"
+      "id, submission_url, description:notes, status, submitted_at, payout_tx_hash, worker_user_id, worker_name, approved_at"
     )
     .eq("gig_id", gig.id)
     .order("submitted_at", { ascending: false });

@@ -11,7 +11,7 @@ export async function GET() {
   const { data, error } = await supabase
     .from("gigs")
     .select(
-      "id, slug, title, org, initials, bg, color, desc_short, prize_php, reward_amount, reward_unit, type, skill, deadline_at, status, submissions, featured, live, created_at"
+      "id, slug, title, org, initials, prize_php, reward_amount, reward_unit, type, skill, deadline_at, status, submissions, featured, live, created_at"
     )
     .eq("live", true)
     .order("featured", { ascending: false })

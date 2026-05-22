@@ -28,7 +28,7 @@ export async function POST(req: Request) {
     );
   }
 
-  const { gig_id, worker_user_id, worker_name, submission_url, description, twitter_url } =
+  const { gig_id, worker_user_id, worker_name, submission_url, description } =
     parsed.data;
 
   const { data, error } = await supabase
@@ -38,8 +38,7 @@ export async function POST(req: Request) {
       worker_user_id,
       worker_name: worker_name ?? null,
       submission_url,
-      description: description ?? null,
-      twitter_url: twitter_url || null,
+      notes: description ?? null,
       status: "pending_review",
     })
     .select("id, status, submitted_at")
@@ -70,8 +69,8 @@ export async function GET(req: Request) {
   const { data, error } = await supabase
     .from("gig_submissions")
     .select(
-      `id, submission_url, description, twitter_url, status, submitted_at, payout_tx_hash,
-       gigs ( id, slug, title, org, initials, bg, color, prize_php, reward_amount, reward_unit )`
+      `id, submission_url, description:notes, status, submitted_at, payout_tx_hash,
+       gigs ( id, slug, title, org, initials, prize_php, reward_amount, reward_unit )`
     )
     .eq("worker_user_id", workerUserId)
     .order("submitted_at", { ascending: false });
