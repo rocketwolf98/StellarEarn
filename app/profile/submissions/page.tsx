@@ -122,7 +122,6 @@ export default function MySubmissionsPage() {
                         href={sub.submissionUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
                         className="flex items-center gap-1 text-stellar-teal hover:underline"
                       >
                         <LinkIcon className="h-3 w-3" /> View submission
