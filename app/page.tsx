@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 
 import { BOUNTIES } from "@/lib/data";
 import type { Tab, Skill } from "@/lib/data";
-import { fetchGigs, deadlineDue } from "@/lib/api";
+import { fetchGigs } from "@/lib/api";
 import type { GigRow } from "@/lib/api";
 import { BountyListItem } from "@/components/features/bounty-list-item";
 
