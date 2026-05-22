@@ -88,12 +88,19 @@ export function SubmissionModal({
   async function handlePayAndSubmit() {
     setSigning(true);
     try {
+      // Normalize URL: prepend https:// if missing a protocol
+      const rawUrl = submissionUrl.trim();
+      const normalizedUrl =
+        rawUrl.startsWith("http://") || rawUrl.startsWith("https://")
+          ? rawUrl
+          : `https://${rawUrl}`;
+
       // POST to real API — workerUserId falls back to a placeholder for unauthed MVP
       const result = await postSubmission({
         gig_id: gig.id,
         worker_user_id: workerUserId ?? "7a70c8f0-f069-4249-89a4-38e905dfbc68",
         worker_name: workerName,
-        submission_url: submissionUrl.trim(),
+        submission_url: normalizedUrl,
         description: description.trim(),
         twitter_url: twitterUrl.trim() || undefined,
       });

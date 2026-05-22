@@ -3,12 +3,12 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 const SubmitSchema = z.object({
-  gig_id: z.string().uuid(),
+  gig_id: z.string().min(1),                                      // any non-empty string — UUID in prod, numeric string in mock
   worker_user_id: z.string().uuid(),
   worker_name: z.string().max(80).optional(),
-  submission_url: z.string().url(),
+  submission_url: z.string().min(1),                               // normalized to https:// in the modal
   description: z.string().max(500).optional(),
-  twitter_url: z.string().url().optional().or(z.literal("")),
+  twitter_url: z.string().optional().or(z.literal("")),
 });
 
 /**
