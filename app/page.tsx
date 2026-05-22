@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 import { BOUNTIES, GRANTS, EARNERS, ACTIVITIES } from "@/lib/data";
 import type { Tab, Skill } from "@/lib/data";
@@ -143,7 +144,7 @@ function StellarEarnDashboard() {
     <div className="pb-20 backdrop-blur-[1px]">
 
       {/* HERO */}
-      <div className="relative flex min-h-[180px] items-center justify-between overflow-hidden bg-stellar-cosmic px-[8vw] py-8 rounded-2xl mb-6 border border-white/15 shadow-xl">
+      <div className="relative flex min-h-[180px] items-center justify-between overflow-hidden bg-stellar-cosmic px-[8vw] py-8 rounded-2xl mb-6 border border-white/15 shadow-xl  mx-[1vw] my-[1vh] ">
 
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80')] bg-cover bg-center opacity-50 mix-blend-overlay" />
 
@@ -207,10 +208,14 @@ function StellarEarnDashboard() {
           <div className="mb-4 flex items-center gap-4">
             <span className="font-semibold">Browse Opportunities</span>
 
-            <Tabs value={activeTab} onValueChange={handleTabChange}>
-              <TabsList>
+            <Tabs value={activeTab} onValueChange={handleTabChange} className="w-fit">
+              <TabsList className="rounded-full bg-zinc-100 p-1 h-9 items-center dark:bg-zinc-900 flex gap-1">
                 {(["all", "bounties", "projects"] as const).map((t) => (
-                  <TabsTrigger key={t} value={t}>
+                  <TabsTrigger
+                    key={t}
+                    value={t}
+                    className="rounded-full h-7 px-4 text-xs font-semibold capitalize data-active:bg-white data-active:text-zinc-900 dark:data-active:bg-zinc-800 dark:data-active:text-zinc-100 data-active:shadow-sm"
+                  >
                     {t}
                   </TabsTrigger>
                 ))}
@@ -235,7 +240,13 @@ function StellarEarnDashboard() {
               <Badge
                 key={val}
                 onClick={() => handleSkillChange(val)}
-                className="cursor-pointer"
+                variant={activeSkill === val ? "default" : "outline"}
+                className={cn(
+                  "cursor-pointer transition-all px-3 py-1 text-xs rounded-full border",
+                  activeSkill === val
+                    ? "bg-primary text-primary-foreground border-transparent shadow-sm"
+                    : "bg-transparent text-muted-foreground border-border hover:bg-muted/50 hover:text-foreground"
+                )}
               >
                 {label}
               </Badge>
