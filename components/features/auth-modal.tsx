@@ -116,7 +116,7 @@ export function AuthModal({
     setTimeout(() => {
       setIsSignUpLoading(false);
       toast.success("Account created successfully!", {
-        description: `Welcome to StellarEarn, @${signUpUsername}!`,
+        description: `Welcome to Star.Quest, @${signUpUsername}!`,
       });
       onAuthSuccess(undefined, signUpUsername, selectedRole);
       onClose();
@@ -132,10 +132,10 @@ export function AuthModal({
         <DialogHeader className="pt-2">
           <div className="flex items-center gap-2 mb-1">
             <div className="flex h-6 w-6 items-center justify-center rounded bg-[#FDDA24] text-[10px] font-bold text-[#0F0F0F] ring-2 ring-[#FDDA24]/20 animate-pulse">
-              SE
+              SQ
             </div>
             <DialogTitle className="text-xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50">
-              StellarEarn Portal
+              Star.Quest Portal
             </DialogTitle>
           </div>
           <DialogDescription className="text-xs text-zinc-500 dark:text-zinc-400">
@@ -368,7 +368,7 @@ export function AuthModal({
                 {isSignUpLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  "Create StellarEarn Profile"
+                  "Create Star.Quest Profile"
                 )}
               </Button>
             </form>

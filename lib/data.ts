@@ -79,8 +79,8 @@ export const BOUNTIES = [
   {
     id: 2,
     slug: "design-contributor-onboarding",
-    title: "Design contributor onboarding for StellarEarn",
-    org: "StellarEarn",
+    title: "Design contributor onboarding for Star.Quest",
+    org: "Star.Quest",
     initials: "SE",
     bg: "#B7ACE81a",
     color: "#B7ACE8",
@@ -125,7 +125,7 @@ export const BOUNTIES = [
     featured: false,
     live: false,
     status: "closed" as BountyStatus,
-    desc: "Document the StellarEarn escrow contract for developers integrating with it. Cover all public functions, error codes, and JS SDK integration examples.",
+    desc: "Document the Star.Quest escrow contract for developers integrating with it. Cover all public functions, error codes, and JS SDK integration examples.",
     deliverables: [
       "README with full contract API docs",
       "Integration guide with JS examples",
@@ -298,7 +298,7 @@ export const SUBMISSIONS: Submission[] = [
     walletAddress: "GDRXE2BQUC3AZNPVFSCEZ76NJ3WWL25FYFK6IQJZFE3CEWHG4M7RU1ND",
     submissionUrl: "https://github.com/analim/soroban-escrow-docs",
     description:
-      "Complete API reference for the StellarEarn escrow contract with JS integration examples and a deployed docs site.",
+      "Complete API reference for the Star.Quest escrow contract with JS integration examples and a deployed docs site.",
     submittedAt: "2026-05-18T09:00:00Z",
     status: "winner",
     txHash: "f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1",
@@ -327,8 +327,8 @@ export const GRANTS = [
   },
   {
     id: 2,
-    title: "StellarEarn Builder Grant",
-    org: "StellarEarn",
+    title: "Star.Quest Builder Grant",
+    org: "Star.Quest",
     initials: "SE",
     bg: "linear-gradient(135deg,#00A7B5,#B7ACE8)",
     prize: "Up to ₱50,000",
@@ -364,7 +364,7 @@ export const EARNERS = [
   },
   {
     name: "Paolo Reyes",
-    task: "Onboarding design · StellarEarn",
+    task: "Onboarding design · Star.Quest",
     prize: "12k",
     token: "PHP",
     initials: "PR",

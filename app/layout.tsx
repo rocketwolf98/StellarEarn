@@ -22,7 +22,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "StellarEarn",
+  title: "Star.Quest",
   description: "Discover bounties, projects, and grants from Stellar DAOs.",
 };
 

@@ -10,7 +10,7 @@ export async function generateMetadata({
 }: ReviewPageProps): Promise<Metadata> {
   const { slug } = await params;
   return {
-    title: `Review Submissions — ${slug} | StellarEarn`,
+    title: `Review Submissions — ${slug} | Star.Quest`,
     description: "Sponsor review dashboard for evaluating and selecting bounty winners.",
   };
 }

@@ -70,9 +70,9 @@ export function Header() {
         <div className="flex items-center">
           <Link href="/" className="mr-7 flex items-center gap-2 text-[15px] font-semibold text-foreground no-underline">
             <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-stellar-yellow text-[10px] font-bold text-stellar-black">
-              SE
+              SQ
             </div>
-            <span>StellarEarn</span>
+            <span>Star.Quest</span>
           </Link>
           <nav className="flex gap-1">
             {[

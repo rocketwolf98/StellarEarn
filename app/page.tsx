@@ -19,7 +19,7 @@ import {
 
 import { AdjustmentsHorizontalIcon } from "@heroicons/react/24/solid";
 
-function StellarEarnDashboard() {
+function StarQuestDashboard() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -131,7 +131,7 @@ function StellarEarnDashboard() {
 
         <div className="relative z-10 max-w-[560px]">
           <h2 className="mb-3 text-3xl font-extrabold text-white">
-            Get into StellarEarn
+            Get into Star.Quest
           </h2>
 
           <p className="mb-5 text-[13.5px] text-zinc-200">
@@ -242,7 +242,7 @@ function StellarEarnDashboard() {
           </div>
 
           <Card className="p-4">
-            <div className="font-bold">StellarEarn</div>
+            <div className="font-bold">Star.Quest</div>
             <p className="text-xs text-muted-foreground">
               Web3 bounties powered by Freighter
             </p>
@@ -260,10 +260,10 @@ function StellarEarnDashboard() {
 }
 
 /* WRAPPER */
-export default function StellarEarnPage() {
+export default function StarQuestPage() {
   return (
     <Suspense fallback={<div className="p-10">Loading...</div>}>
-      <StellarEarnDashboard />
+      <StarQuestDashboard />
     </Suspense>
   );
 }

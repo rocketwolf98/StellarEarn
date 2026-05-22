@@ -8,9 +8,9 @@ export function Footer() {
         <div className="max-w-[280px]">
           <div className="mb-2.5 flex items-center gap-2 text-[15px] font-semibold text-foreground">
             <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-stellar-yellow text-[10px] font-bold text-stellar-black">
-              SE
+              SQ
             </div>
-            <span>StellarEarn</span>
+            <span>Star.Quest</span>
           </div>
           <p className="mb-3.5 text-xs leading-[1.6] text-muted-foreground">
             Discover bounties, projects, and grants from Stellar DAOs and ecosystem projects. PHP local payouts, on-chain Soroban escrow.
@@ -18,7 +18,7 @@ export function Footer() {
           <div className="mb-4 flex gap-3">
             <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground no-underline hover:text-foreground transition-colors">GitHub</a>
             <a href="https://x.com" target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground no-underline hover:text-foreground transition-colors">X</a>
-            <a href="mailto:contact@stellarearn.com" className="text-xs text-muted-foreground no-underline hover:text-foreground transition-colors">Email</a>
+            <a href="mailto:contact@star.quest" className="text-xs text-muted-foreground no-underline hover:text-foreground transition-colors">Email</a>
           </div>
           <div className="inline-flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1.5 bg-background">
             <span className="text-[9px] tracking-[0.06em] text-muted-foreground">POWERED BY</span>
@@ -70,7 +70,7 @@ export function Footer() {
         </div>
       </div>
       <div className="flex items-center justify-between border-t border-border px-8 py-3 text-xs text-muted-foreground bg-background/40">
-        <span>© 2025 StellarEarn. All rights reserved.</span>
+        <span>© 2025 Star.Quest. All rights reserved.</span>
         <div className="flex items-center gap-1.5">
           <span className="text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">SKILL</span>
           <span className="flex items-center gap-1 cursor-pointer text-xs text-foreground hover:text-stellar-teal transition-colors">

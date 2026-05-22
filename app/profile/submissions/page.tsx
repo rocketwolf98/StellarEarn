@@ -8,9 +8,9 @@ import { ArrowLeftIcon, LinkIcon } from "@heroicons/react/24/outline";
 import { TrophyIcon } from "@heroicons/react/24/solid";
 
 export const metadata: Metadata = {
-  title: "My Submissions — StellarEarn",
+  title: "My Submissions — Star.Quest",
   description:
-    "Track all your bounty submissions, their review status, and prize payouts on StellarEarn.",
+    "Track all your bounty submissions, their review status, and prize payouts on Star.Quest.",
 };
 
 const STATUS_LABEL: Record<SubmissionStatus, string> = {
