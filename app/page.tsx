@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, Suspense } from "react";
+import { useState, useCallback, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +10,8 @@ import { cn } from "@/lib/utils";
 
 import { BOUNTIES } from "@/lib/data";
 import type { Tab, Skill } from "@/lib/data";
+import { fetchGigs, deadlineDue } from "@/lib/api";
+import type { GigRow } from "@/lib/api";
 import { BountyListItem } from "@/components/features/bounty-list-item";
 
 import {
@@ -19,12 +21,60 @@ import {
 
 import { AdjustmentsHorizontalIcon } from "@heroicons/react/24/solid";
 
+// Convert the static mock array into a GigRow-compatible shape for fallback
+const MOCK_GIGS: GigRow[] = BOUNTIES.map((b) => ({
+  id: String(b.id),
+  slug: b.slug,
+  title: b.title,
+  org: b.org,
+  initials: b.initials,
+  bg: b.bg,
+  color: b.color,
+  desc_short: b.desc,
+  description: b.desc,
+  prize_php: b.prize,
+  reward_amount: b.prizeUsdc,
+  reward_unit: "USDC",
+  type: b.type,
+  skill: b.skill,
+  deadline_at: b.deadline,
+  submissions: b.submissions,
+  featured: b.featured,
+  live: b.live,
+  status: b.status === "under_review" ? "pending_review" : b.status,
+  created_by_user_id: "mock",
+  fee_xlm: 2,
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+  paid_at: null,
+  paid_by_user_id: null,
+  payment_tx_hash: null,
+  sponsor_name: null,
+  sponsor_wallet: null,
+  deliverables: b.deliverables,
+}));
+
 function StarQuestDashboard() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const activeTab = (searchParams.get("tab") as Tab) || "all";
   const activeSkill = (searchParams.get("skill") as Skill) || "all";
+
+  /* =========================
+     LIVE DATA
+  ========================= */
+  const [gigs, setGigs] = useState<GigRow[]>(MOCK_GIGS);
+  const [loadingGigs, setLoadingGigs] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchGigs().then((data) => {
+      if (!cancelled && data.length > 0) setGigs(data);
+      setLoadingGigs(false);
+    });
+    return () => { cancelled = true; };
+  }, []);
 
   /* =========================
      WALLET STATE (AUTH)
@@ -89,10 +139,10 @@ function StarQuestDashboard() {
   };
 
   const handleSurpriseMe = () => {
-    if (!BOUNTIES.length) return;
-
-    const random = BOUNTIES[Math.floor(Math.random() * BOUNTIES.length)];
-
+    if (!gigs.length) return;
+    const openGigs = gigs.filter((g) => g.live);
+    const pool = openGigs.length ? openGigs : gigs;
+    const random = pool[Math.floor(Math.random() * pool.length)];
     router.push(
       random.type === "bounty"
         ? `/bounties/${random.slug}`
@@ -106,13 +156,13 @@ function StarQuestDashboard() {
     );
   };
 
-  const filteredBounties = BOUNTIES.filter((b) => {
+  const filteredGigs = gigs.filter((g) => {
     const tabOk =
       activeTab === "all" ||
-      (activeTab === "bounties" && b.type === "bounty") ||
-      (activeTab === "projects" && b.type === "project");
+      (activeTab === "bounties" && g.type === "bounty") ||
+      (activeTab === "projects" && g.type === "project");
 
-    const skillOk = activeSkill === "all" || b.skill === activeSkill;
+    const skillOk = activeSkill === "all" || g.skill === activeSkill;
 
     return tabOk && skillOk;
   });
@@ -226,9 +276,15 @@ function StarQuestDashboard() {
 
           {/* LIST */}
           <div>
-            {filteredBounties.map((b) => (
-              <BountyListItem key={b.id} bounty={b} />
-            ))}
+            {loadingGigs && gigs.length === 0 ? (
+              <div className="py-10 text-center text-sm text-muted-foreground">Loading bounties…</div>
+            ) : filteredGigs.length === 0 ? (
+              <div className="py-10 text-center text-sm text-muted-foreground">No bounties match this filter.</div>
+            ) : (
+              filteredGigs.map((g) => (
+                <BountyListItem key={g.id} gig={g} />
+              ))
+            )}
           </div>
 
         </main>
