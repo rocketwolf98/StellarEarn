@@ -12,7 +12,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import type { Bounty } from "@/lib/data";
+import type { GigRow } from "@/lib/api";
+import { postSubmission } from "@/lib/api";
 import {
   ArrowRightIcon,
   ArrowLeftIcon,
@@ -28,7 +29,9 @@ import {
 interface SubmissionModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  bounty: Bounty;
+  gig: GigRow;
+  workerUserId?: string;
+  workerName?: string;
 }
 
 type Step = 1 | 2 | 3;
@@ -39,13 +42,14 @@ const STEPS = [
   { label: "Confirmed" },
 ];
 
-const MOCK_TX_HASH =
-  "c4d5e6f7a8b9c4d5e6f7a8b9c4d5e6f7a8b9c4d5e6f7a8b9c4d5e6f7a8b9c4d5";
+const FALLBACK_SUBMISSION_ID = "pending";
 
 export function SubmissionModal({
   open,
   onOpenChange,
-  bounty,
+  gig,
+  workerUserId,
+  workerName,
 }: SubmissionModalProps) {
   const [step, setStep] = useState<Step>(1);
   const [submissionUrl, setSubmissionUrl] = useState("");
@@ -53,6 +57,7 @@ export function SubmissionModal({
   const [twitterUrl, setTwitterUrl] = useState("");
   const [signing, setSigning] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [submissionId, setSubmissionId] = useState(FALLBACK_SUBMISSION_ID);
 
   function reset() {
     setStep(1);
@@ -82,19 +87,36 @@ export function SubmissionModal({
 
   async function handlePayAndSubmit() {
     setSigning(true);
-    // Simulate Freighter signing delay
-    await new Promise((r) => setTimeout(r, 2200));
-    setSigning(false);
-    setStep(3);
+    try {
+      // POST to real API — workerUserId falls back to a placeholder for unauthed MVP
+      const result = await postSubmission({
+        gig_id: gig.id,
+        worker_user_id: workerUserId ?? "7a70c8f0-f069-4249-89a4-38e905dfbc68",
+        worker_name: workerName,
+        submission_url: submissionUrl.trim(),
+        description: description.trim(),
+        twitter_url: twitterUrl.trim() || undefined,
+      });
+      if ("error" in result) {
+        toast.error(result.error);
+        return;
+      }
+      setSubmissionId(result.id);
+      setStep(3);
+    } finally {
+      setSigning(false);
+    }
   }
 
   function handleCopy() {
-    void navigator.clipboard.writeText(MOCK_TX_HASH);
+    void navigator.clipboard.writeText(submissionId);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }
 
-  const truncatedHash = `${MOCK_TX_HASH.slice(0, 8)}…${MOCK_TX_HASH.slice(-8)}`;
+  const truncatedHash = submissionId.length > 16
+    ? `${submissionId.slice(0, 8)}…${submissionId.slice(-8)}`
+    : submissionId;
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -148,7 +170,7 @@ export function SubmissionModal({
                 <p className="text-[12px] text-muted-foreground dark:text-stellar-gray/70 leading-relaxed">
                   Share your submission for{" "}
                   <span className="font-semibold text-stellar-black dark:text-stellar-white">
-                    {bounty.title}
+                    {gig.title}
                   </span>
                 </p>
               </DialogHeader>
@@ -231,7 +253,7 @@ export function SubmissionModal({
                   Pay entry fee
                 </DialogTitle>
                 <p className="text-[12px] text-muted-foreground dark:text-stellar-gray/70 leading-relaxed">
-                  A {bounty.fee} entry fee is required. Winners get it back plus
+                  A {gig.fee_xlm} XLM entry fee is required. Winners get it back plus
                   the full prize.
                 </p>
               </DialogHeader>
@@ -239,8 +261,8 @@ export function SubmissionModal({
               {/* Fee breakdown */}
               <div className="rounded-xl border border-stellar-gray/20 dark:border-stellar-gray/10 bg-stellar-gray/5 dark:bg-stellar-gray/5 p-4 space-y-2.5">
                 {[
-                  ["Entry fee", bounty.fee],
-                  ["Prize pool (escrow)", `₱${bounty.prize.toLocaleString()}`],
+                  ["Entry fee", `${gig.fee_xlm} XLM`],
+                  ["Prize pool (escrow)", `₱${gig.prize_php.toLocaleString()}`],
                   ["Network fee (est.)", "~0.00001 XLM"],
                 ].map(([label, value]) => (
                   <div
@@ -259,7 +281,7 @@ export function SubmissionModal({
                   <span className="font-bold text-stellar-black dark:text-stellar-white">
                     You pay today
                   </span>
-                  <span className="font-bold text-stellar-teal">{bounty.fee}</span>
+                  <span className="font-bold text-stellar-teal">{gig.fee_xlm} XLM</span>
                 </div>
               </div>
 
@@ -339,7 +361,7 @@ export function SubmissionModal({
                   </button>
                 </div>
                 <a
-                  href={`https://stellar.expert/explorer/testnet/tx/${MOCK_TX_HASH}`}
+                  href={`https://stellar.expert/explorer/testnet/tx/${submissionId}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-1.5 inline-flex items-center gap-1 text-[10.5px] text-stellar-teal hover:underline font-medium"

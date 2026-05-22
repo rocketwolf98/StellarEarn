@@ -4,8 +4,8 @@ import { useState } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import type { Bounty } from "@/lib/data";
-import { SUBMISSIONS } from "@/lib/data";
+import type { GigRow, SubmissionRow } from "@/lib/api";
+import { deadlineDue } from "@/lib/api";
 import {
   CheckBadgeIcon,
   ChatBubbleLeftIcon,
@@ -23,63 +23,55 @@ import { SubmissionModal } from "@/components/features/submission-modal";
 import { WinnersPodium } from "@/components/features/winners-podium";
 
 interface BountyDetailProps {
-  bounty: Bounty;
+  gig: GigRow;
+  submissions: SubmissionRow[];
 }
 
 type CurrencyUnit = "PHP" | "USDC";
 
-const STATUS_CONFIG = {
+const STATUS_CONFIG: Record<string, { label: string; dot: string; badge: string }> = {
   open: {
     label: "Open",
     dot: "bg-emerald-500",
-    badge:
-      "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+    badge: "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
   },
-  under_review: {
+  pending_review: {
     label: "Under Review",
     dot: "bg-amber-400 animate-pulse",
-    badge:
-      "border-amber-400/30 bg-amber-400/10 text-amber-600 dark:text-amber-400",
+    badge: "border-amber-400/30 bg-amber-400/10 text-amber-600 dark:text-amber-400",
   },
   closed: {
     label: "Closed",
     dot: "bg-stellar-teal",
-    badge:
-      "border-stellar-teal/30 bg-stellar-teal/10 text-stellar-teal",
+    badge: "border-stellar-teal/30 bg-stellar-teal/10 text-stellar-teal",
   },
-  draft: {
-    label: "Draft",
-    dot: "bg-stellar-gray/60",
-    badge:
-      "border-stellar-gray/30 bg-stellar-gray/10 text-muted-foreground",
-  },
-  cancelled: {
-    label: "Cancelled",
-    dot: "bg-red-500",
-    badge: "border-red-500/30 bg-red-500/10 text-red-500",
+  paid: {
+    label: "Paid",
+    dot: "bg-stellar-teal",
+    badge: "border-stellar-teal/30 bg-stellar-teal/10 text-stellar-teal",
   },
 };
 
-export function BountyDetail({ bounty }: BountyDetailProps) {
+export function BountyDetail({ gig, submissions }: BountyDetailProps) {
   const [modalOpen, setModalOpen] = useState(false);
   const [unit, setUnit] = useState<CurrencyUnit>("PHP");
 
-  const statusCfg = STATUS_CONFIG[bounty.status];
-  const bountySubmissions = SUBMISSIONS.filter(
-    (s) => s.bountySlug === bounty.slug
-  );
+  const statusCfg = STATUS_CONFIG[gig.status] ?? STATUS_CONFIG.open;
+  const due = deadlineDue(gig.deadline_at);
+
+  const winnerSubmission = submissions.find((s) => s.status === "approved");
 
   const displayPrize =
     unit === "PHP"
-      ? `₱${bounty.prize.toLocaleString()}`
-      : `$${bounty.prizeUsdc.toLocaleString()} USDC`;
+      ? `₱${gig.prize_php.toLocaleString()}`
+      : `$${gig.reward_amount.toLocaleString()} ${gig.reward_unit}`;
 
   return (
     <>
       <SubmissionModal
         open={modalOpen}
         onOpenChange={setModalOpen}
-        bounty={bounty}
+        gig={gig}
       />
 
       <div className="mx-auto max-w-5xl p-6">
@@ -101,12 +93,12 @@ export function BountyDetail({ bounty }: BountyDetailProps) {
             <div className="mb-2.5 flex flex-wrap items-center gap-2">
               <div
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-stellar-gray/30 dark:border-stellar-gray/10 text-[9.5px] font-bold shadow-xs"
-                style={{ background: bounty.bg, color: bounty.color }}
+                style={{ background: gig.bg ?? "#00A7B51a", color: gig.color ?? "#00A7B5" }}
               >
-                {bounty.initials}
+                {gig.initials}
               </div>
               <span className="text-[13px] font-semibold text-stellar-black/80 dark:text-stellar-white/80">
-                {bounty.org}
+                {gig.org}
               </span>
               <CheckBadgeIcon className="h-4 w-4 text-stellar-teal" />
               <Badge
@@ -116,15 +108,13 @@ export function BountyDetail({ bounty }: BountyDetailProps) {
                   statusCfg.badge
                 )}
               >
-                <span
-                  className={cn("h-1.5 w-1.5 rounded-full", statusCfg.dot)}
-                />
+                <span className={cn("h-1.5 w-1.5 rounded-full", statusCfg.dot)} />
                 {statusCfg.label}
               </Badge>
             </div>
 
             <h1 className="mb-2.5 text-[24px] font-bold leading-[1.3] text-stellar-black dark:text-stellar-white tracking-tight">
-              {bounty.title}
+              {gig.title}
             </h1>
 
             <div className="mb-5 flex flex-wrap items-center gap-2.5 text-xs text-muted-foreground dark:text-stellar-gray/70">
@@ -132,22 +122,22 @@ export function BountyDetail({ bounty }: BountyDetailProps) {
                 variant="outline"
                 className={cn(
                   "h-5 px-2 text-[10px] font-semibold transition-colors duration-200",
-                  bounty.type === "bounty"
+                  gig.type === "bounty"
                     ? "border-stellar-teal/20 bg-stellar-teal/5 text-stellar-teal"
                     : "border-stellar-lavender/30 bg-stellar-lavender/5 text-stellar-lavender"
                 )}
               >
-                {bounty.type.charAt(0).toUpperCase() + bounty.type.slice(1)}
+                {gig.type.charAt(0).toUpperCase() + gig.type.slice(1)}
               </Badge>
               <span className="text-stellar-black/20 dark:text-stellar-gray/20">·</span>
               <div className="flex items-center gap-1 font-medium text-stellar-black/70 dark:text-stellar-gray/70">
                 <ClockIcon className="h-3.5 w-3.5 text-stellar-black/40 dark:text-stellar-gray/60" />
-                <span>{bounty.due}</span>
+                <span>{due}</span>
               </div>
               <span className="text-stellar-black/20 dark:text-stellar-gray/20">·</span>
               <div className="flex items-center gap-1 font-medium text-stellar-black/70 dark:text-stellar-gray/70">
                 <ChatBubbleLeftIcon className="h-3.5 w-3.5 text-stellar-black/40 dark:text-stellar-gray/60" />
-                <span>{bounty.submissions} submissions</span>
+                <span>{gig.submissions} submissions</span>
               </div>
             </div>
 
@@ -156,7 +146,7 @@ export function BountyDetail({ bounty }: BountyDetailProps) {
               About this bounty
             </p>
             <p className="mb-6 text-[13.5px] leading-[1.7] text-stellar-black/85 dark:text-stellar-white/85">
-              {bounty.desc}
+              {gig.description}
             </p>
 
             {/* Deliverables */}
@@ -164,7 +154,7 @@ export function BountyDetail({ bounty }: BountyDetailProps) {
               Deliverables
             </p>
             <ul className="m-0 list-none p-0 space-y-1">
-              {bounty.deliverables.map((d, i) => (
+              {gig.deliverables.map((d, i) => (
                 <li
                   key={i}
                   className="flex gap-2.5 border-b border-stellar-gray/15 dark:border-stellar-gray/5 py-2.5 text-[12.5px] leading-[1.6] text-stellar-black/80 dark:text-stellar-white/80 last:border-0 items-start hover:bg-stellar-gray/5 dark:hover:bg-stellar-gray/5 px-2 rounded-lg transition-colors duration-200"
@@ -175,64 +165,66 @@ export function BountyDetail({ bounty }: BountyDetailProps) {
               ))}
             </ul>
 
-            {/* Submissions list (only when not draft) */}
-            {bounty.status !== "draft" && bountySubmissions.length > 0 && (
+            {/* Submissions list */}
+            {submissions.length > 0 && (
               <div className="mt-8">
                 <p className="mb-3 block text-[10.5px] font-bold uppercase tracking-[0.1em] text-stellar-navy dark:text-stellar-lavender">
-                  Submissions ({bountySubmissions.length})
+                  Submissions ({submissions.length})
                 </p>
                 <ul className="space-y-2">
-                  {bountySubmissions.map((sub) => (
-                    <li
-                      key={sub.id}
-                      className="flex items-center gap-3 rounded-xl border border-stellar-gray/15 dark:border-stellar-gray/10 bg-card/50 dark:bg-[#151515]/50 px-4 py-3 hover:border-stellar-gray/30 dark:hover:border-stellar-gray/20 transition-colors duration-200"
-                    >
-                      <div
-                        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[9px] font-bold"
-                        style={{
-                          background: sub.submitterColor + "22",
-                          color: sub.submitterColor,
-                        }}
+                  {submissions.map((sub) => {
+                    const initials = (sub.worker_name ?? "?")
+                      .split(" ")
+                      .slice(0, 2)
+                      .map((w) => w[0])
+                      .join("")
+                      .toUpperCase();
+                    return (
+                      <li
+                        key={sub.id}
+                        className="flex items-center gap-3 rounded-xl border border-stellar-gray/15 dark:border-stellar-gray/10 bg-card/50 dark:bg-[#151515]/50 px-4 py-3 hover:border-stellar-gray/30 dark:hover:border-stellar-gray/20 transition-colors duration-200"
                       >
-                        {sub.submitterInitials}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-[12.5px] font-semibold text-stellar-black dark:text-stellar-white">
-                            {sub.submitterName}
-                          </span>
-                          <span className="text-[11px] text-muted-foreground dark:text-stellar-gray/60 font-medium">
-                            {sub.submitterHandle}
-                          </span>
-                        </div>
-                        <a
-                          href={sub.submissionUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-[11px] text-stellar-teal hover:underline font-medium truncate block max-w-xs"
+                        <div
+                          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[9px] font-bold"
+                          style={{ background: "#00A7B522", color: "#00A7B5" }}
                         >
-                          {sub.submissionUrl}
-                        </a>
-                      </div>
-                      <Badge
-                        variant="outline"
-                        className={cn(
-                          "h-5 px-2 text-[10px] font-semibold shrink-0",
-                          sub.status === "winner"
-                            ? "border-stellar-yellow/40 bg-stellar-yellow/10 text-stellar-black dark:text-stellar-white"
-                            : sub.status === "under_review"
-                              ? "border-amber-400/30 bg-amber-400/10 text-amber-600 dark:text-amber-400"
-                              : "border-stellar-gray/20 bg-stellar-gray/10 text-muted-foreground"
-                        )}
-                      >
-                        {sub.status === "winner"
-                          ? "🏆 Winner"
-                          : sub.status === "under_review"
-                            ? "Under review"
-                            : "Submitted"}
-                      </Badge>
-                    </li>
-                  ))}
+                          {initials}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[12.5px] font-semibold text-stellar-black dark:text-stellar-white">
+                              {sub.worker_name ?? "Anonymous"}
+                            </span>
+                          </div>
+                          <a
+                            href={sub.submission_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[11px] text-stellar-teal hover:underline font-medium truncate block max-w-xs"
+                          >
+                            {sub.submission_url}
+                          </a>
+                        </div>
+                        <Badge
+                          variant="outline"
+                          className={cn(
+                            "h-5 px-2 text-[10px] font-semibold shrink-0",
+                            sub.status === "approved"
+                              ? "border-stellar-yellow/40 bg-stellar-yellow/10 text-stellar-black dark:text-stellar-white"
+                              : sub.status === "pending_review"
+                                ? "border-amber-400/30 bg-amber-400/10 text-amber-600 dark:text-amber-400"
+                                : "border-stellar-gray/20 bg-stellar-gray/10 text-muted-foreground"
+                          )}
+                        >
+                          {sub.status === "approved"
+                            ? "🏆 Winner"
+                            : sub.status === "pending_review"
+                              ? "Under review"
+                              : "Submitted"}
+                        </Badge>
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             )}
@@ -271,26 +263,18 @@ export function BountyDetail({ bounty }: BountyDetailProps) {
               </div>
 
               {[
-                ["Entry fee", bounty.fee],
-                ["Submissions", String(bounty.submissions)],
-                ["Deadline", bounty.deadline],
+                ["Entry fee", `${gig.fee_xlm} XLM`],
+                ["Submissions", String(gig.submissions)],
+                ["Deadline", due],
                 [
                   "Escrow status",
-                  bounty.status === "closed" ? (
-                    <span
-                      key="paid"
-                      className="flex items-center gap-1 text-stellar-teal font-semibold"
-                    >
-                      Paid out{" "}
-                      <CheckCircleIcon className="h-3.5 w-3.5 text-stellar-teal" />
+                  gig.status === "closed" || gig.status === "paid" ? (
+                    <span key="paid" className="flex items-center gap-1 text-stellar-teal font-semibold">
+                      Paid out <CheckCircleIcon className="h-3.5 w-3.5 text-stellar-teal" />
                     </span>
                   ) : (
-                    <span
-                      key="locked"
-                      className="flex items-center gap-1 text-emerald-500 font-semibold"
-                    >
-                      Locked{" "}
-                      <CheckCircleIcon className="h-3.5 w-3.5 text-emerald-500 animate-pulse" />
+                    <span key="locked" className="flex items-center gap-1 text-emerald-500 font-semibold">
+                      Locked <CheckCircleIcon className="h-3.5 w-3.5 text-emerald-500 animate-pulse" />
                     </span>
                   ),
                 ],
@@ -309,8 +293,7 @@ export function BountyDetail({ bounty }: BountyDetailProps) {
                   <span
                     className={cn(
                       "font-semibold",
-                      l !== "Escrow status" &&
-                        "text-stellar-black dark:text-stellar-white"
+                      l !== "Escrow status" && "text-stellar-black dark:text-stellar-white"
                     )}
                   >
                     {v}
@@ -320,7 +303,7 @@ export function BountyDetail({ bounty }: BountyDetailProps) {
 
               {/* Status-aware CTA */}
               <div className="relative z-10 mt-4">
-                {bounty.status === "open" && (
+                {gig.status === "open" && (
                   <>
                     <Button
                       onClick={() => setModalOpen(true)}
@@ -329,13 +312,12 @@ export function BountyDetail({ bounty }: BountyDetailProps) {
                       Submit your work
                     </Button>
                     <p className="mt-3 text-center text-[10px] leading-[1.5] text-stellar-black/50 dark:text-stellar-gray/60 font-medium">
-                      Winners get their {bounty.fee} fee back plus the full
-                      prize. Losing fees fund the platform.
+                      Winners get their {gig.fee_xlm} XLM fee back plus the full prize. Losing fees fund the platform.
                     </p>
                   </>
                 )}
 
-                {bounty.status === "under_review" && (
+                {gig.status === "pending_review" && (
                   <div className="flex flex-col items-center gap-2 rounded-xl border border-amber-400/30 bg-amber-400/5 p-4 text-center">
                     <ClockIcon className="h-6 w-6 text-amber-500" />
                     <div>
@@ -349,7 +331,7 @@ export function BountyDetail({ bounty }: BountyDetailProps) {
                   </div>
                 )}
 
-                {bounty.status === "closed" && (
+                {(gig.status === "closed" || gig.status === "paid") && (
                   <div className="flex flex-col items-center gap-2 rounded-xl border border-stellar-teal/20 bg-stellar-teal/5 p-4 text-center">
                     <LockClosedIcon className="h-5 w-5 text-stellar-teal" />
                     <p className="text-[11px] text-muted-foreground dark:text-stellar-gray/70">
@@ -360,12 +342,13 @@ export function BountyDetail({ bounty }: BountyDetailProps) {
               </div>
             </Card>
 
-            {/* Winner card (only when closed) */}
-            {bounty.status === "closed" && bounty.winner && (
+            {/* Winner card */}
+            {(gig.status === "closed" || gig.status === "paid") && winnerSubmission && (
               <Card className="relative overflow-hidden p-5 shadow-[0_4px_20px_rgba(15,15,15,0.02)] border border-stellar-gray/20 dark:border-stellar-gray/10 bg-white/70 dark:bg-[#151515]/70 backdrop-blur-md">
                 <WinnersPodium
-                  winner={bounty.winner}
-                  prizeToken={bounty.prizeToken}
+                  winner={winnerSubmission}
+                  prizePhp={gig.prize_php}
+                  prizeUnit={gig.reward_unit}
                 />
               </Card>
             )}
@@ -378,13 +361,13 @@ export function BountyDetail({ bounty }: BountyDetailProps) {
               <div className="relative z-10 flex items-center gap-2.5">
                 <div
                   className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-stellar-gray/30 dark:border-stellar-gray/10 text-[9.5px] font-bold shadow-xs"
-                  style={{ background: bounty.bg, color: bounty.color }}
+                  style={{ background: gig.bg ?? "#00A7B51a", color: gig.color ?? "#00A7B5" }}
                 >
-                  {bounty.initials}
+                  {gig.initials}
                 </div>
                 <div>
                   <div className="text-[12.5px] font-bold text-stellar-black dark:text-stellar-white">
-                    {bounty.org}
+                    {gig.org}
                   </div>
                   <div className="flex items-center gap-1 text-[11px] text-stellar-black/50 dark:text-stellar-gray/60 font-medium">
                     Verified DAO{" "}
