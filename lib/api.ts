@@ -32,7 +32,31 @@ export function deadlineDue(deadlineAt: string): string {
 
 // ─── API fetch helpers ──────────────────────────────────────────────────────
 
-const BASE = process.env.NEXT_PUBLIC_API_URL ?? "";
+const RAW_BASE = process.env.NEXT_PUBLIC_API_URL?.trim() ?? "";
+
+function resolveApiBase(): string {
+  if (!RAW_BASE) return "";
+
+  const normalized = RAW_BASE.replace(/\/+$/, "");
+  const pointsToLocalhost = /localhost|127\.0\.0\.1/i.test(normalized);
+
+  if (!pointsToLocalhost) return normalized;
+
+  if (typeof window !== "undefined") {
+    const host = window.location.hostname;
+    const isLocalHost = host === "localhost" || host === "127.0.0.1";
+    return isLocalHost ? normalized : "";
+  }
+
+  // On Vercel server runtime, avoid localhost base and use same-origin relative paths.
+  if (process.env.VERCEL === "1") {
+    return "";
+  }
+
+  return normalized;
+}
+
+const BASE = resolveApiBase();
 
 /**
  * Fetch all live gigs from the API.
