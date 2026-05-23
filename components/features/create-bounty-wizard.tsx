@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { createGig } from "@/lib/api";
 import {
   ArrowRightIcon,
   ArrowLeftIcon,
@@ -127,6 +128,39 @@ export function CreateBountyWizard() {
   async function handleFundEscrow() {
     setFunding(true);
     await new Promise((r) => setTimeout(r, 2500));
+
+    const slugBase = slugify(title || "new-gig");
+    const slugSuffix = hashText(`${title}-${deadline}-${description}`);
+    const slug = `${slugBase}-${slugSuffix}`;
+    const numericPrize = parseFloat(prizeAmount || "0");
+
+    const createResult = await createGig({
+      title,
+      slug,
+      org: "Star.Quest",
+      initials: "SQ",
+      description,
+      desc_short: description.slice(0, 180),
+      prize_php: prizeUnit === "PHP" ? numericPrize : numericPrize * 56,
+      reward_amount: prizeUnit === "USDC" ? numericPrize : numericPrize / 56,
+      reward_unit: "USDC",
+      fee_xlm: 2,
+      type,
+      skill,
+      deadline_at: new Date(deadline).toISOString(),
+      featured: false,
+      live: true,
+      status: "open",
+      sponsor_name: "Star.Quest Sponsor",
+      deliverables: deliverables.filter((d) => d.trim()),
+    });
+
+    if ("error" in createResult) {
+      setFunding(false);
+      toast.error(`Failed to publish bounty: ${createResult.error}`);
+      return;
+    }
+
     setFunding(false);
     setFunded(true);
     toast.success("Escrow funded and bounty is now live!");
@@ -138,6 +172,24 @@ export function CreateBountyWizard() {
     prizeUnit === "PHP"
       ? `₱${parseFloat(prizeAmount || "0").toLocaleString()}`
       : `$${parseFloat(prizeAmount || "0").toLocaleString()} USDC`;
+
+  function slugify(value: string) {
+    return value
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, "")
+      .trim()
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-")
+      .slice(0, 60);
+  }
+
+  function hashText(value: string) {
+    let hash = 0;
+    for (let i = 0; i < value.length; i += 1) {
+      hash = (hash * 31 + value.charCodeAt(i)) >>> 0;
+    }
+    return hash.toString(36).slice(-6).padStart(6, "0");
+  }
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">

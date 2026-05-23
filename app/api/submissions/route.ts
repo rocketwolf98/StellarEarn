@@ -28,8 +28,42 @@ export async function POST(req: Request) {
     );
   }
 
-  const { gig_id, worker_user_id, worker_name, submission_url, description } =
+  const { gig_id, worker_user_id, worker_name, submission_url, description, twitter_url } =
     parsed.data;
+
+  // Ensure target gig exists before insert to avoid generic FK failures.
+  const { data: gig, error: gigLookupError } = await supabase
+    .from("gigs")
+    .select("id")
+    .eq("id", gig_id)
+    .maybeSingle();
+
+  if (gigLookupError) {
+    console.error("[POST /api/submissions] gig lookup", gigLookupError.message);
+    return NextResponse.json({ error: "Failed to validate gig" }, { status: 500 });
+  }
+
+  if (!gig) {
+    return NextResponse.json({ error: "Gig not found" }, { status: 404 });
+  }
+
+  const { data: existingWorker, error: workerLookupError } = await supabase
+    .from("users")
+    .select("id")
+    .eq("id", worker_user_id)
+    .maybeSingle();
+
+  if (workerLookupError) {
+    console.error("[POST /api/submissions] worker lookup", workerLookupError.message);
+    return NextResponse.json({ error: "Failed to validate worker" }, { status: 500 });
+  }
+
+  if (!existingWorker) {
+    return NextResponse.json(
+      { error: "Authenticated user not found. Please sign in again." },
+      { status: 401 }
+    );
+  }
 
   const { data, error } = await supabase
     .from("gig_submissions")
@@ -39,6 +73,7 @@ export async function POST(req: Request) {
       worker_name: worker_name ?? null,
       submission_url,
       notes: description ?? null,
+      twitter_url: twitter_url && twitter_url.length > 0 ? twitter_url : null,
       status: "pending_review",
     })
     .select("id, status, submitted_at")
@@ -46,7 +81,7 @@ export async function POST(req: Request) {
 
   if (error) {
     console.error("[POST /api/submissions]", error.message);
-    return NextResponse.json({ error: "Failed to submit" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to submit", details: error.message }, { status: 500 });
   }
 
   return NextResponse.json(data, { status: 201 });

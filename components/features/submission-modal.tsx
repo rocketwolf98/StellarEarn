@@ -86,6 +86,16 @@ export function SubmissionModal({
   }
 
   async function handlePayAndSubmit() {
+    if (!workerUserId) {
+      toast.error("Please log in first before submitting.");
+      window.dispatchEvent(
+        new CustomEvent("open-auth-modal", {
+          detail: { tab: "signin" },
+        })
+      );
+      return;
+    }
+
     setSigning(true);
     try {
       // Normalize URL: prepend https:// if missing a protocol
@@ -95,10 +105,9 @@ export function SubmissionModal({
           ? rawUrl
           : `https://${rawUrl}`;
 
-      // POST to real API — workerUserId falls back to a placeholder for unauthed MVP
       const result = await postSubmission({
         gig_id: gig.id,
-        worker_user_id: workerUserId ?? "7a70c8f0-f069-4249-89a4-38e905dfbc68",
+        worker_user_id: workerUserId,
         worker_name: workerName,
         submission_url: normalizedUrl,
         description: description.trim(),

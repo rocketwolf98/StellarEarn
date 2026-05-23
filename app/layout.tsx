@@ -37,7 +37,10 @@ export default function RootLayout({
       className={`${workSans.variable} ${aleo.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="relative flex min-h-full flex-col font-sans text-foreground bg-background">
+      <body
+        suppressHydrationWarning
+        className="relative flex min-h-full flex-col font-sans text-foreground bg-background"
+      >
         {/* Ambient Glow Blobs & Noise Texture */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden -z-10 bg-stellar-noise-direct opacity-[0.012] bg-repeat" />
         <div className="pointer-events-none absolute inset-0 overflow-hidden -z-20">

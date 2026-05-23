@@ -8,22 +8,29 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { 
-  Wallet, 
-  Mail, 
-  Lock, 
-  User, 
-  Check, 
-  Loader2, 
-  ShieldCheck, 
-  UserSquare2, 
-  Building2 
+import { confirmWalletChallenge, loginUser, registerUser, requestWalletChallenge } from "@/lib/api";
+import { requestAccess, signMessage } from "@stellar/freighter-api";
+import {
+  Wallet,
+  Mail,
+  Lock,
+  User,
+  Check,
+  Loader2,
+  ShieldCheck,
+  UserSquare2,
+  Building2
 } from "lucide-react";
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAuthSuccess: (walletAddress?: string, username?: string, role?: "earner" | "sponsor") => void;
+  onAuthSuccess: (
+    walletAddress?: string,
+    username?: string,
+    role?: "earner" | "sponsor",
+    userId?: string
+  ) => void;
   defaultTab?: "signin" | "signup";
 }
 
@@ -34,10 +41,11 @@ export function AuthModal({
   defaultTab = "signin",
 }: AuthModalProps) {
   const [activeTab, setActiveTab] = useState<string>(defaultTab);
-  
+
   // Wallet state
   const [isWalletConnecting, setIsWalletConnecting] = useState(false);
-  
+  const [connectedWallet, setConnectedWallet] = useState<string | null>(null);
+
   // Sign In states
   const [signInEmail, setSignInEmail] = useState("");
   const [signInPassword, setSignInPassword] = useState("");
@@ -50,26 +58,80 @@ export function AuthModal({
   const [selectedRole, setSelectedRole] = useState<"earner" | "sponsor">("earner");
   const [isSignUpLoading, setIsSignUpLoading] = useState(false);
 
-  // Mock Wallet connection
-  const handleWalletConnect = () => {
+  const handleWalletConnect = async () => {
     setIsWalletConnecting(true);
     toast.loading("Connecting Freighter wallet...", { id: "wallet-conn" });
 
-    // Simulate ledger/SEP-10 challenge round-trip
-    setTimeout(() => {
-      setIsWalletConnecting(false);
-      const mockAddress = "GBXY3K7K2M6H2N7K3S4G7T9M2X5W9K1L9P";
+    try {
+      const access = await requestAccess();
+
+      if (access.error || !access.address) {
+        throw new Error(access.error ?? "Failed to access wallet address");
+      }
+
+      const challengeResponse = await requestWalletChallenge(access.address);
+
+      if ("error" in challengeResponse) {
+        throw new Error(challengeResponse.error);
+      }
+
+      const signed = await signMessage(challengeResponse.challenge, {
+        address: access.address,
+      });
+
+      if (signed.error || !signed.signedMessage) {
+        throw new Error(signed.error ?? "Wallet signature failed");
+      }
+
+      const signatureBase64 =
+        typeof signed.signedMessage === "string"
+          ? signed.signedMessage
+          : Buffer.from(signed.signedMessage).toString("base64");
+
+      const confirmed = await confirmWalletChallenge({
+        challenge_id: challengeResponse.challenge_id,
+        stellar_public_key: access.address,
+        challenge: challengeResponse.challenge,
+        signature_base64: signatureBase64,
+        signer_address: signed.signerAddress ?? access.address,
+      });
+
+      if ("error" in confirmed) {
+        throw new Error(confirmed.error);
+      }
+
+      setConnectedWallet(access.address);
+
+      if (confirmed.requires_profile) {
+        toast.success("Wallet verified. Complete profile setup to continue.", {
+          id: "wallet-conn",
+        });
+        setActiveTab("signup");
+        return;
+      }
+
       toast.success("Wallet connected successfully!", {
         id: "wallet-conn",
-        description: `Authenticated: ${mockAddress.substring(0, 6)}...${mockAddress.slice(-4)}`,
+        description: `Authenticated: ${access.address.substring(0, 6)}...${access.address.slice(-4)}`,
       });
-      onAuthSuccess(mockAddress, "StellarUser", selectedRole);
+
+      onAuthSuccess(
+        access.address,
+        confirmed.user?.username,
+        (confirmed.user?.role as "earner" | "sponsor" | undefined) ?? selectedRole,
+        confirmed.user?.id
+      );
       onClose();
-    }, 1500);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Wallet authentication failed";
+      toast.error(message, { id: "wallet-conn" });
+    } finally {
+      setIsWalletConnecting(false);
+    }
   };
 
   // Credentials Sign In
-  const handleEmailSignIn = (e: React.FormEvent) => {
+  const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!signInEmail || !signInPassword) {
       toast.error("Please fill in all fields");
@@ -85,20 +147,36 @@ export function AuthModal({
     }
 
     setIsSignInLoading(true);
-    setTimeout(() => {
-      setIsSignInLoading(false);
-      const displayUsername = signInEmail.split("@")[0];
-      toast.success("Signed in successfully!", {
-        description: `Welcome back, ${displayUsername}`,
-      });
-      onAuthSuccess(undefined, displayUsername);
-      onClose();
-    }, 1200);
+    const login = await loginUser({
+      email: signInEmail,
+      password: signInPassword,
+    });
+    setIsSignInLoading(false);
+
+    if ("error" in login) {
+      toast.error(login.error);
+      return;
+    }
+
+    toast.success("Signed in successfully!", {
+      description: `Welcome back, ${login.user.username}`,
+    });
+    onAuthSuccess(
+      login.user.stellar_public_key,
+      login.user.username,
+      login.user.role,
+      login.user.id
+    );
+    onClose();
   };
 
   // Sign Up
-  const handleSignUp = (e: React.FormEvent) => {
+  const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!connectedWallet) {
+      toast.error("Connect and verify your wallet first");
+      return;
+    }
     if (!signUpEmail || !signUpUsername || !signUpPassword) {
       toast.error("Please fill in all fields");
       return;
@@ -113,14 +191,31 @@ export function AuthModal({
     }
 
     setIsSignUpLoading(true);
-    setTimeout(() => {
-      setIsSignUpLoading(false);
-      toast.success("Account created successfully!", {
-        description: `Welcome to Star.Quest, @${signUpUsername}!`,
-      });
-      onAuthSuccess(undefined, signUpUsername, selectedRole);
-      onClose();
-    }, 1200);
+    const registration = await registerUser({
+      email: signUpEmail,
+      username: signUpUsername,
+      password: signUpPassword,
+      stellar_public_key: connectedWallet,
+      role: selectedRole,
+    });
+
+    setIsSignUpLoading(false);
+
+    if ("error" in registration) {
+      toast.error(registration.error);
+      return;
+    }
+
+    toast.success("Account created successfully!", {
+      description: `Welcome to Star.Quest, @${registration.username}!`,
+    });
+    onAuthSuccess(
+      connectedWallet,
+      registration.username,
+      registration.role as "earner" | "sponsor",
+      registration.id
+    );
+    onClose();
   };
 
   return (
@@ -149,14 +244,14 @@ export function AuthModal({
           className="mt-2 w-full"
         >
           <TabsList className="grid w-full grid-cols-2 rounded-full bg-zinc-100 p-1 h-9 items-center dark:bg-zinc-900">
-            <TabsTrigger 
-              value="signin" 
+            <TabsTrigger
+              value="signin"
               className="rounded-full h-7 text-xs font-semibold data-active:bg-white data-active:text-zinc-900 dark:data-active:bg-zinc-800 dark:data-active:text-zinc-100 data-active:shadow-sm"
             >
               Sign In
             </TabsTrigger>
-            <TabsTrigger 
-              value="signup" 
+            <TabsTrigger
+              value="signup"
               className="rounded-full h-7 text-xs font-semibold data-active:bg-white data-active:text-zinc-900 dark:data-active:bg-zinc-800 dark:data-active:text-zinc-100 data-active:shadow-sm"
             >
               Create Account
@@ -253,6 +348,34 @@ export function AuthModal({
           {/* SIGN UP CONTENT */}
           <TabsContent value="signup" className="mt-4 flex flex-col gap-4">
             <form onSubmit={handleSignUp} className="flex flex-col gap-3.5">
+              {!connectedWallet && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={isWalletConnecting}
+                  onClick={handleWalletConnect}
+                  className="relative flex h-10 w-full items-center justify-center gap-2 border-zinc-200 bg-white text-zinc-900 hover:bg-zinc-50 hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800"
+                >
+                  {isWalletConnecting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin text-stellar-teal" />
+                      <span className="text-xs font-medium">Authorizing via SEP-10...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Wallet className="h-4 w-4 text-[#FDDA24] fill-[#FDDA24]/10" />
+                      <span className="text-xs font-semibold">Connect & Verify Wallet First</span>
+                    </>
+                  )}
+                </Button>
+              )}
+
+              {connectedWallet && (
+                <div className="rounded-md border border-emerald-500/25 bg-emerald-500/10 px-3 py-2 text-[10px] text-emerald-700 dark:text-emerald-300">
+                  Wallet verified: {connectedWallet.substring(0, 6)}...{connectedWallet.slice(-4)}
+                </div>
+              )}
+
               <div className="space-y-1">
                 <Label className="text-xs font-bold text-zinc-800 dark:text-zinc-200">
                   Select Profile Type
@@ -362,7 +485,7 @@ export function AuthModal({
 
               <Button
                 type="submit"
-                disabled={isSignUpLoading}
+                disabled={isSignUpLoading || !connectedWallet}
                 className="mt-2 h-9 w-full bg-stellar-fluid text-xs font-semibold text-white hover:brightness-95 hover:shadow"
               >
                 {isSignUpLoading ? (
@@ -371,6 +494,12 @@ export function AuthModal({
                   "Create Star.Quest Profile"
                 )}
               </Button>
+
+              {!connectedWallet && (
+                <p className="text-[10px] text-zinc-500">
+                  Wallet verification is required before creating a profile.
+                </p>
+              )}
             </form>
           </TabsContent>
         </Tabs>

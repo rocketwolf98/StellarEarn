@@ -215,6 +215,85 @@ export type Database = {
         }
         Relationships: []
       }
+      transactions: {
+        Row: {
+          amount_stroops: number | null
+          asset_code: string | null
+          asset_issuer: string | null
+          confirmed_at: string | null
+          created_at: string
+          gig_id: string | null
+          id: string
+          metadata: Json
+          network: Database["public"]["Enums"]["network_type"]
+          operation: string
+          status: Database["public"]["Enums"]["transaction_status"]
+          stellar_public_key: string
+          submission_id: string | null
+          tx_hash: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          amount_stroops?: number | null
+          asset_code?: string | null
+          asset_issuer?: string | null
+          confirmed_at?: string | null
+          created_at?: string
+          gig_id?: string | null
+          id?: string
+          metadata?: Json
+          network?: Database["public"]["Enums"]["network_type"]
+          operation: string
+          status?: Database["public"]["Enums"]["transaction_status"]
+          stellar_public_key: string
+          submission_id?: string | null
+          tx_hash: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          amount_stroops?: number | null
+          asset_code?: string | null
+          asset_issuer?: string | null
+          confirmed_at?: string | null
+          created_at?: string
+          gig_id?: string | null
+          id?: string
+          metadata?: Json
+          network?: Database["public"]["Enums"]["network_type"]
+          operation?: string
+          status?: Database["public"]["Enums"]["transaction_status"]
+          stellar_public_key?: string
+          submission_id?: string | null
+          tx_hash?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_gig_id_fkey"
+            columns: ["gig_id"]
+            isOneToOne: false
+            referencedRelation: "gigs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "gig_submissions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       users: {
         Row: {
           account_created_at: string | null
@@ -225,13 +304,16 @@ export type Database = {
           created_at: string | null
           email: string
           id: string
+          last_login_at: string | null
           location: string | null
+          password_hash: string | null
           role: string
           sep10_challenge_created_at: string | null
           sep10_challenge_xdr: string | null
           stellar_public_key: string
           updated_at: string | null
           username: string
+          wallet_verified_at: string | null
         }
         Insert: {
           account_created_at?: string | null
@@ -242,13 +324,16 @@ export type Database = {
           created_at?: string | null
           email: string
           id?: string
+          last_login_at?: string | null
           location?: string | null
+          password_hash?: string | null
           role?: string
           sep10_challenge_created_at?: string | null
           sep10_challenge_xdr?: string | null
           stellar_public_key: string
           updated_at?: string | null
           username: string
+          wallet_verified_at?: string | null
         }
         Update: {
           account_created_at?: string | null
@@ -259,13 +344,43 @@ export type Database = {
           created_at?: string | null
           email?: string
           id?: string
+          last_login_at?: string | null
           location?: string | null
+          password_hash?: string | null
           role?: string
           sep10_challenge_created_at?: string | null
           sep10_challenge_xdr?: string | null
           stellar_public_key?: string
           updated_at?: string | null
           username?: string
+          wallet_verified_at?: string | null
+        }
+        Relationships: []
+      }
+      wallet_auth_challenges: {
+        Row: {
+          challenge_hash: string
+          consumed_at: string | null
+          created_at: string
+          expires_at: string
+          id: string
+          stellar_public_key: string
+        }
+        Insert: {
+          challenge_hash: string
+          consumed_at?: string | null
+          created_at?: string
+          expires_at: string
+          id?: string
+          stellar_public_key: string
+        }
+        Update: {
+          challenge_hash?: string
+          consumed_at?: string | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          stellar_public_key?: string
         }
         Relationships: []
       }

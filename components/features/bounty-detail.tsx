@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -19,6 +19,7 @@ import {
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { getAuthSession } from "@/lib/auth-session";
 import { SubmissionModal } from "@/components/features/submission-modal";
 import { WinnersPodium } from "@/components/features/winners-podium";
 
@@ -55,6 +56,28 @@ const STATUS_CONFIG: Record<string, { label: string; dot: string; badge: string 
 export function BountyDetail({ gig, submissions }: BountyDetailProps) {
   const [modalOpen, setModalOpen] = useState(false);
   const [unit, setUnit] = useState<CurrencyUnit>("PHP");
+  const [workerUserId, setWorkerUserId] = useState<string | undefined>(undefined);
+  const [workerName, setWorkerName] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    const hydrate = () => {
+      const session = getAuthSession();
+      if (!session) {
+        setWorkerUserId(undefined);
+        setWorkerName(undefined);
+        return;
+      }
+
+      setWorkerUserId(session.userId);
+      setWorkerName(session.username);
+    };
+
+    hydrate();
+    window.addEventListener("auth-session-changed", hydrate);
+    return () => {
+      window.removeEventListener("auth-session-changed", hydrate);
+    };
+  }, []);
 
   const statusCfg = STATUS_CONFIG[gig.status] ?? STATUS_CONFIG.open;
   const due = deadlineDue(gig.deadline_at);
@@ -72,6 +95,8 @@ export function BountyDetail({ gig, submissions }: BountyDetailProps) {
         open={modalOpen}
         onOpenChange={setModalOpen}
         gig={gig}
+        workerUserId={workerUserId}
+        workerName={workerName}
       />
 
       <div className="mx-auto max-w-5xl p-6">
