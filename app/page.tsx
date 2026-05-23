@@ -182,11 +182,16 @@ function StarQuestDashboard() {
 
         <div className="relative z-10 max-w-[560px]">
           <h2 className="mb-3 text-3xl font-extrabold text-white">
-            Get into Star.Quest
+            Earn Your First Stellar Asset
           </h2>
 
-          <p className="mb-5 text-[13.5px] text-zinc-200">
-            Earn on-chain rewards via Freighter wallet.
+          <p className="mb-2 text-[13.5px] text-zinc-200">
+            Star.quest gives contributors a better front door: do the work, get rewarded, build
+            reputation, and unlock bigger missions.
+          </p>
+
+          <p className="mb-5 text-[12px] font-semibold uppercase tracking-wide text-stellar-yellow">
+            Not buy first. Earn first.
           </p>
 
           {/* AUTH + WALLET UI */}
@@ -195,7 +200,7 @@ function StarQuestDashboard() {
             {/* SHOW ONLY IF NOT LOGGED IN */}
             {!isLoggedIn && (
               <Button onClick={handleSignUpClick}>
-                Get Started
+                Earn First
               </Button>
             )}
 
@@ -206,7 +211,7 @@ function StarQuestDashboard() {
                 disabled={walletLoading}
                 className="bg-white/10 border border-white/30 text-white"
               >
-                {walletLoading ? "Connecting..." : "Connect Wallet"}
+                {walletLoading ? "Connecting..." : "Confirm Wallet"}
               </Button>
             ) : (
               <Button
@@ -228,7 +233,7 @@ function StarQuestDashboard() {
 
           {/* Tabs */}
           <div className="mb-4 flex items-center gap-4">
-            <span className="font-semibold">Browse Opportunities</span>
+            <span className="font-semibold">Star.quest | Stellar&apos;s Mission Board</span>
 
             <Tabs value={activeTab} onValueChange={handleTabChange} className="w-fit">
               <TabsList className="rounded-full bg-zinc-100 p-1 h-9 items-center dark:bg-zinc-900 flex gap-1">
@@ -301,12 +306,25 @@ function StarQuestDashboard() {
           <Card className="p-4">
             <div className="font-bold">Star.Quest</div>
             <p className="text-xs text-muted-foreground">
-              Web3 bounties powered by Freighter
+              Simple front door. Trusted settlement underneath.
             </p>
 
             <Button className="mt-3 w-full" onClick={handleSurpriseMe}>
               Surprise Me
             </Button>
+          </Card>
+
+          <Card className="mt-3 p-4">
+            <div className="font-bold">The Core Loop</div>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Post missions. Prove work. Settle rewards. Build reputation.
+            </p>
+            <div className="mt-3 space-y-1 text-[11px] text-muted-foreground">
+              <div>01 Post - projects publish clear deliverables.</div>
+              <div>02 Prove - contributors submit verifiable proof.</div>
+              <div>03 Settle - rewards move through Stellar.</div>
+              <div>04 Signal - completed missions build reputation.</div>
+            </div>
           </Card>
 
         </aside>

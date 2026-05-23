@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { StrKey } from "@stellar/stellar-sdk";
 import { z } from "zod";
 
 const SignUpSchema = z.object({
@@ -30,6 +31,10 @@ export async function POST(req: Request) {
 
   const { email, username, stellar_public_key, role } = parsed.data;
 
+  if (!StrKey.isValidEd25519PublicKey(stellar_public_key)) {
+    return NextResponse.json({ error: "Invalid Stellar public key" }, { status: 400 });
+  }
+
   // Check if username is taken
   const { data: existing } = await supabase
     .from("users")
@@ -50,6 +55,7 @@ export async function POST(req: Request) {
         username,
         stellar_public_key,
         role,
+        auth_provider: "sep10",
         account_status: "active",
       },
       { onConflict: "stellar_public_key" }

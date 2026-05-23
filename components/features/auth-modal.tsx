@@ -8,6 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { confirmWalletChallenge, registerUser, requestWalletChallenge } from "@/lib/api";
+import { requestAccess, signMessage } from "@stellar/freighter-api";
 import { 
   Wallet, 
   Mail, 
@@ -37,6 +39,7 @@ export function AuthModal({
   
   // Wallet state
   const [isWalletConnecting, setIsWalletConnecting] = useState(false);
+  const [connectedWallet, setConnectedWallet] = useState<string | null>(null);
   
   // Sign In states
   const [signInEmail, setSignInEmail] = useState("");
@@ -50,22 +53,69 @@ export function AuthModal({
   const [selectedRole, setSelectedRole] = useState<"earner" | "sponsor">("earner");
   const [isSignUpLoading, setIsSignUpLoading] = useState(false);
 
-  // Mock Wallet connection
-  const handleWalletConnect = () => {
+  const handleWalletConnect = async () => {
     setIsWalletConnecting(true);
     toast.loading("Connecting Freighter wallet...", { id: "wallet-conn" });
 
-    // Simulate ledger/SEP-10 challenge round-trip
-    setTimeout(() => {
-      setIsWalletConnecting(false);
-      const mockAddress = "GBXY3K7K2M6H2N7K3S4G7T9M2X5W9K1L9P";
+    try {
+      const access = await requestAccess();
+
+      if (access.error || !access.address) {
+        throw new Error(access.error ?? "Failed to access wallet address");
+      }
+
+      const challengeResponse = await requestWalletChallenge(access.address);
+
+      if ("error" in challengeResponse) {
+        throw new Error(challengeResponse.error);
+      }
+
+      const signed = await signMessage(challengeResponse.challenge, {
+        address: access.address,
+      });
+
+      if (signed.error || !signed.signedMessage) {
+        throw new Error(signed.error ?? "Wallet signature failed");
+      }
+
+      const confirmed = await confirmWalletChallenge({
+        challenge_id: challengeResponse.challenge_id,
+        stellar_public_key: access.address,
+        challenge: challengeResponse.challenge,
+        signature_base64: signed.signedMessage,
+      });
+
+      if ("error" in confirmed) {
+        throw new Error(confirmed.error);
+      }
+
+      setConnectedWallet(access.address);
+
+      if (confirmed.requires_profile) {
+        toast.success("Wallet verified. Complete profile setup to continue.", {
+          id: "wallet-conn",
+        });
+        setActiveTab("signup");
+        return;
+      }
+
       toast.success("Wallet connected successfully!", {
         id: "wallet-conn",
-        description: `Authenticated: ${mockAddress.substring(0, 6)}...${mockAddress.slice(-4)}`,
+        description: `Authenticated: ${access.address.substring(0, 6)}...${access.address.slice(-4)}`,
       });
-      onAuthSuccess(mockAddress, "StellarUser", selectedRole);
+
+      onAuthSuccess(
+        access.address,
+        confirmed.user?.username,
+        (confirmed.user?.role as "earner" | "sponsor" | undefined) ?? selectedRole
+      );
       onClose();
-    }, 1500);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Wallet authentication failed";
+      toast.error(message, { id: "wallet-conn" });
+    } finally {
+      setIsWalletConnecting(false);
+    }
   };
 
   // Credentials Sign In
@@ -97,8 +147,12 @@ export function AuthModal({
   };
 
   // Sign Up
-  const handleSignUp = (e: React.FormEvent) => {
+  const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!connectedWallet) {
+      toast.error("Connect and verify your wallet first");
+      return;
+    }
     if (!signUpEmail || !signUpUsername || !signUpPassword) {
       toast.error("Please fill in all fields");
       return;
@@ -113,14 +167,25 @@ export function AuthModal({
     }
 
     setIsSignUpLoading(true);
-    setTimeout(() => {
-      setIsSignUpLoading(false);
-      toast.success("Account created successfully!", {
-        description: `Welcome to Star.Quest, @${signUpUsername}!`,
-      });
-      onAuthSuccess(undefined, signUpUsername, selectedRole);
-      onClose();
-    }, 1200);
+    const registration = await registerUser({
+      email: signUpEmail,
+      username: signUpUsername,
+      stellar_public_key: connectedWallet,
+      role: selectedRole,
+    });
+
+    setIsSignUpLoading(false);
+
+    if ("error" in registration) {
+      toast.error(registration.error);
+      return;
+    }
+
+    toast.success("Account created successfully!", {
+      description: `Welcome to Star.Quest, @${registration.username}!`,
+    });
+    onAuthSuccess(connectedWallet, registration.username, registration.role as "earner" | "sponsor");
+    onClose();
   };
 
   return (
@@ -362,7 +427,7 @@ export function AuthModal({
 
               <Button
                 type="submit"
-                disabled={isSignUpLoading}
+                disabled={isSignUpLoading || !connectedWallet}
                 className="mt-2 h-9 w-full bg-stellar-fluid text-xs font-semibold text-white hover:brightness-95 hover:shadow"
               >
                 {isSignUpLoading ? (
@@ -371,6 +436,12 @@ export function AuthModal({
                   "Create Star.Quest Profile"
                 )}
               </Button>
+
+              {!connectedWallet && (
+                <p className="text-[10px] text-zinc-500">
+                  Wallet verification is required before creating a profile.
+                </p>
+              )}
             </form>
           </TabsContent>
         </Tabs>

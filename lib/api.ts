@@ -3,6 +3,7 @@ import type { Tables } from "@/lib/database.types";
 // DB row shapes
 export type GigRow = Tables<"gigs">;
 export type SubmissionRow = Tables<"gig_submissions">;
+export type TransactionRow = Tables<"transactions">;
 
 // ─── Helper: convert DB status → display label ──────────────────────────────
 
@@ -168,6 +169,94 @@ export async function registerUser(payload: {
       return { error: (data as { error?: string }).error ?? "Registration failed" };
     }
     return data as { id: string; username: string; role: string };
+  } catch {
+    return { error: "Network error" };
+  }
+}
+
+/**
+ * Request wallet auth challenge text for signature confirmation.
+ */
+export async function requestWalletChallenge(
+  stellarPublicKey: string
+): Promise<{ challenge_id: string; challenge: string; expires_at: string } | { error: string }> {
+  try {
+    const res = await fetch(`${BASE}/api/auth/wallet/challenge`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ stellar_public_key: stellarPublicKey }),
+    });
+    const data: unknown = await res.json();
+    if (!res.ok) {
+      return { error: (data as { error?: string }).error ?? "Failed to issue challenge" };
+    }
+    return data as { challenge_id: string; challenge: string; expires_at: string };
+  } catch {
+    return { error: "Network error" };
+  }
+}
+
+/**
+ * Confirm wallet signature for an issued challenge.
+ */
+export async function confirmWalletChallenge(payload: {
+  challenge_id: string;
+  stellar_public_key: string;
+  challenge: string;
+  signature_base64: string;
+}): Promise<
+  | { authenticated: true; requires_profile: boolean; user: { id: string; username: string; role: string } | null }
+  | { error: string }
+> {
+  try {
+    const res = await fetch(`${BASE}/api/auth/wallet/confirm`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data: unknown = await res.json();
+    if (!res.ok) {
+      return { error: (data as { error?: string }).error ?? "Wallet confirmation failed" };
+    }
+    return data as {
+      authenticated: true;
+      requires_profile: boolean;
+      user: { id: string; username: string; role: string } | null;
+    };
+  } catch {
+    return { error: "Network error" };
+  }
+}
+
+/**
+ * Ingest a transaction record through API.
+ */
+export async function recordTransaction(payload: {
+  user_id?: string;
+  gig_id?: string;
+  submission_id?: string;
+  stellar_public_key: string;
+  tx_hash: string;
+  network?: "testnet" | "mainnet";
+  status?: "pending_signature" | "signed" | "submitted" | "confirmed" | "failed";
+  operation: string;
+  amount_stroops?: number;
+  asset_code?: string;
+  asset_issuer?: string;
+  metadata?: Record<string, unknown>;
+  confirmed_at?: string;
+}): Promise<{ id: string; tx_hash: string; status: string; operation: string } | { error: string }> {
+  try {
+    const res = await fetch(`${BASE}/api/transactions`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data: unknown = await res.json();
+    if (!res.ok) {
+      return { error: (data as { error?: string }).error ?? "Failed to record transaction" };
+    }
+    return data as { id: string; tx_hash: string; status: string; operation: string };
   } catch {
     return { error: "Network error" };
   }
