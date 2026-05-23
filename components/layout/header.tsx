@@ -16,7 +16,7 @@ export function Header() {
   const [username, setUsername] = useState<string | null>(initialSession?.username ?? null);
   const [role, setRole] = useState<"earner" | "sponsor" | null>(initialSession?.role ?? null);
   const [walletAddress, setWalletAddress] = useState<string | null>(initialSession?.walletAddress ?? null);
-  
+
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalTab, setAuthModalTab] = useState<"signin" | "signup">("signin");
 
@@ -44,8 +44,8 @@ export function Header() {
   }, []);
 
   const handleAuthSuccess = (
-    address?: string, 
-    name?: string, 
+    address?: string,
+    name?: string,
     selectedRole?: "earner" | "sponsor",
     authenticatedUserId?: string
   ) => {
@@ -131,7 +131,7 @@ export function Header() {
           >
             Become a Sponsor <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
           </Link>
- 
+
           {walletConnected || username ? (
             <>
               {/* My Submissions link */}
@@ -157,8 +157,8 @@ export function Header() {
                 </span>
                 {role && (
                   <span className={`rounded-md px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider ${
-                    role === "sponsor" 
-                      ? "bg-stellar-yellow/10 text-stellar-yellow border border-stellar-yellow/20" 
+                    role === "sponsor"
+                      ? "bg-stellar-yellow/10 text-stellar-yellow border border-stellar-yellow/20"
                       : "bg-stellar-teal/10 text-stellar-teal border border-stellar-teal/20"
                   }`}>
                     {role}
@@ -185,7 +185,7 @@ export function Header() {
               >
                 Login
               </Button>
-              <Button 
+              <Button
                 className="h-8 bg-stellar-yellow text-xs font-semibold text-stellar-black hover:bg-stellar-yellow/90 hover:-translate-y-[1px] hover:shadow-sm cursor-pointer transition-all duration-200"
                 onClick={() => {
                   setAuthModalTab("signup");
