@@ -1,14 +1,22 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { StrKey } from "@stellar/stellar-sdk";
+import { randomBytes, scryptSync } from "node:crypto";
 import { z } from "zod";
 
 const SignUpSchema = z.object({
   email: z.string().email(),
   username: z.string().min(3).max(30).regex(/^[a-zA-Z0-9_]+$/, "Letters, numbers, underscores only"),
+  password: z.string().min(6).max(100),
   stellar_public_key: z.string().min(56).max(56),
   role: z.enum(["earner", "sponsor"]).default("earner"),
 });
+
+function hashPassword(password: string): string {
+  const salt = randomBytes(16).toString("hex");
+  const hash = scryptSync(password, salt, 64).toString("hex");
+  return `${salt}:${hash}`;
+}
 
 /**
  * POST /api/auth/signup
@@ -29,7 +37,8 @@ export async function POST(req: Request) {
     );
   }
 
-  const { email, username, stellar_public_key, role } = parsed.data;
+  const { email, username, password, stellar_public_key, role } = parsed.data;
+  const passwordHash = hashPassword(password);
 
   if (!StrKey.isValidEd25519PublicKey(stellar_public_key)) {
     return NextResponse.json({ error: "Invalid Stellar public key" }, { status: 400 });
@@ -55,6 +64,7 @@ export async function POST(req: Request) {
         username,
         stellar_public_key,
         role,
+        password_hash: passwordHash,
         auth_provider: "sep10",
         account_status: "active",
       },

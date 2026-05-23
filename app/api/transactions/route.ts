@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import type { Json } from "@/lib/database.types";
 import { NextResponse } from "next/server";
 import { StrKey } from "@stellar/stellar-sdk";
 import { z } from "zod";
@@ -20,6 +21,33 @@ const TransactionSchema = z.object({
   metadata: z.record(z.string(), z.unknown()).optional(),
   confirmed_at: z.string().datetime().optional(),
 });
+
+function normalizeJson(value: unknown): Json {
+  if (value === null) return null;
+
+  if (
+    typeof value === "string" ||
+    typeof value === "number" ||
+    typeof value === "boolean"
+  ) {
+    return value;
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((item) => normalizeJson(item));
+  }
+
+  if (typeof value === "object") {
+    const obj = value as Record<string, unknown>;
+    const out: { [key: string]: Json | undefined } = {};
+    for (const [key, item] of Object.entries(obj)) {
+      out[key] = normalizeJson(item);
+    }
+    return out;
+  }
+
+  return String(value);
+}
 
 /**
  * GET /api/transactions?stellar_public_key=<wallet>
@@ -88,7 +116,7 @@ export async function POST(req: Request) {
         amount_stroops: payload.amount_stroops ?? null,
         asset_code: payload.asset_code ?? null,
         asset_issuer: payload.asset_issuer ?? null,
-        metadata: payload.metadata ?? {},
+        metadata: normalizeJson(payload.metadata ?? {}),
         confirmed_at: payload.confirmed_at ?? null,
       },
       { onConflict: "tx_hash" }

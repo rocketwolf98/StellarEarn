@@ -200,6 +200,7 @@ export async function lookupUser(
 export async function registerUser(payload: {
   email: string;
   username: string;
+  password: string;
   stellar_public_key: string;
   role: "earner" | "sponsor";
 }): Promise<{ id: string; username: string; role: string } | { error: string }> {
@@ -214,6 +215,34 @@ export async function registerUser(payload: {
       return { error: (data as { error?: string }).error ?? "Registration failed" };
     }
     return data as { id: string; username: string; role: string };
+  } catch {
+    return { error: "Network error" };
+  }
+}
+
+/**
+ * Login user with email/password.
+ */
+export async function loginUser(payload: {
+  email: string;
+  password: string;
+}): Promise<
+  | { user: { id: string; username: string; role: "earner" | "sponsor"; stellar_public_key: string } }
+  | { error: string }
+> {
+  try {
+    const res = await fetch(`${BASE}/api/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data: unknown = await res.json();
+    if (!res.ok) {
+      return { error: (data as { error?: string }).error ?? "Login failed" };
+    }
+    return data as {
+      user: { id: string; username: string; role: "earner" | "sponsor"; stellar_public_key: string };
+    };
   } catch {
     return { error: "Network error" };
   }

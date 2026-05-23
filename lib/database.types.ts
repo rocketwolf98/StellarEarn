@@ -306,6 +306,7 @@ export type Database = {
           id: string
           last_login_at: string | null
           location: string | null
+          password_hash: string | null
           role: string
           sep10_challenge_created_at: string | null
           sep10_challenge_xdr: string | null
@@ -325,6 +326,7 @@ export type Database = {
           id?: string
           last_login_at?: string | null
           location?: string | null
+          password_hash?: string | null
           role?: string
           sep10_challenge_created_at?: string | null
           sep10_challenge_xdr?: string | null
@@ -344,6 +346,7 @@ export type Database = {
           id?: string
           last_login_at?: string | null
           location?: string | null
+          password_hash?: string | null
           role?: string
           sep10_challenge_created_at?: string | null
           sep10_challenge_xdr?: string | null

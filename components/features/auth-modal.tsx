@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { confirmWalletChallenge, registerUser, requestWalletChallenge } from "@/lib/api";
+import { confirmWalletChallenge, loginUser, registerUser, requestWalletChallenge } from "@/lib/api";
 import { requestAccess, signMessage } from "@stellar/freighter-api";
 import {
   Wallet,
@@ -25,7 +25,12 @@ import {
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAuthSuccess: (walletAddress?: string, username?: string, role?: "earner" | "sponsor") => void;
+  onAuthSuccess: (
+    walletAddress?: string,
+    username?: string,
+    role?: "earner" | "sponsor",
+    userId?: string
+  ) => void;
   defaultTab?: "signin" | "signup";
 }
 
@@ -113,7 +118,8 @@ export function AuthModal({
       onAuthSuccess(
         access.address,
         confirmed.user?.username,
-        (confirmed.user?.role as "earner" | "sponsor" | undefined) ?? selectedRole
+        (confirmed.user?.role as "earner" | "sponsor" | undefined) ?? selectedRole,
+        confirmed.user?.id
       );
       onClose();
     } catch (error) {
@@ -125,7 +131,7 @@ export function AuthModal({
   };
 
   // Credentials Sign In
-  const handleEmailSignIn = (e: React.FormEvent) => {
+  const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!signInEmail || !signInPassword) {
       toast.error("Please fill in all fields");
@@ -141,15 +147,27 @@ export function AuthModal({
     }
 
     setIsSignInLoading(true);
-    setTimeout(() => {
-      setIsSignInLoading(false);
-      const displayUsername = signInEmail.split("@")[0];
-      toast.success("Signed in successfully!", {
-        description: `Welcome back, ${displayUsername}`,
-      });
-      onAuthSuccess(undefined, displayUsername);
-      onClose();
-    }, 1200);
+    const login = await loginUser({
+      email: signInEmail,
+      password: signInPassword,
+    });
+    setIsSignInLoading(false);
+
+    if ("error" in login) {
+      toast.error(login.error);
+      return;
+    }
+
+    toast.success("Signed in successfully!", {
+      description: `Welcome back, ${login.user.username}`,
+    });
+    onAuthSuccess(
+      login.user.stellar_public_key,
+      login.user.username,
+      login.user.role,
+      login.user.id
+    );
+    onClose();
   };
 
   // Sign Up
@@ -176,6 +194,7 @@ export function AuthModal({
     const registration = await registerUser({
       email: signUpEmail,
       username: signUpUsername,
+      password: signUpPassword,
       stellar_public_key: connectedWallet,
       role: selectedRole,
     });
@@ -190,7 +209,12 @@ export function AuthModal({
     toast.success("Account created successfully!", {
       description: `Welcome to Star.Quest, @${registration.username}!`,
     });
-    onAuthSuccess(connectedWallet, registration.username, registration.role as "earner" | "sponsor");
+    onAuthSuccess(
+      connectedWallet,
+      registration.username,
+      registration.role as "earner" | "sponsor",
+      registration.id
+    );
     onClose();
   };
 

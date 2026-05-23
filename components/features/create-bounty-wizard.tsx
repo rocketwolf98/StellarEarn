@@ -130,7 +130,8 @@ export function CreateBountyWizard() {
     await new Promise((r) => setTimeout(r, 2500));
 
     const slugBase = slugify(title || "new-gig");
-    const slug = `${slugBase}-${Date.now().toString().slice(-6)}`;
+    const slugSuffix = hashText(`${title}-${deadline}-${description}`);
+    const slug = `${slugBase}-${slugSuffix}`;
     const numericPrize = parseFloat(prizeAmount || "0");
 
     const createResult = await createGig({
@@ -180,6 +181,14 @@ export function CreateBountyWizard() {
       .replace(/\s+/g, "-")
       .replace(/-+/g, "-")
       .slice(0, 60);
+  }
+
+  function hashText(value: string) {
+    let hash = 0;
+    for (let i = 0; i < value.length; i += 1) {
+      hash = (hash * 31 + value.charCodeAt(i)) >>> 0;
+    }
+    return hash.toString(36).slice(-6).padStart(6, "0");
   }
 
   return (

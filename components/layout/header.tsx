@@ -7,12 +7,15 @@ import { AuthModal } from "@/components/features/auth-modal";
 import Link from "next/link";
 import { Sun, Moon } from "lucide-react";
 import { useTheme } from "next-themes";
+import { clearAuthSession, getAuthSession, setAuthSession } from "@/lib/auth-session";
 
 export function Header() {
-  const [walletConnected, setWalletConnected] = useState(false);
-  const [username, setUsername] = useState<string | null>(null);
-  const [role, setRole] = useState<"earner" | "sponsor" | null>(null);
-  const [walletAddress, setWalletAddress] = useState<string | null>(null);
+  const initialSession = getAuthSession();
+
+  const [walletConnected, setWalletConnected] = useState(Boolean(initialSession?.walletAddress));
+  const [username, setUsername] = useState<string | null>(initialSession?.username ?? null);
+  const [role, setRole] = useState<"earner" | "sponsor" | null>(initialSession?.role ?? null);
+  const [walletAddress, setWalletAddress] = useState<string | null>(initialSession?.walletAddress ?? null);
   
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalTab, setAuthModalTab] = useState<"signin" | "signup">("signin");
@@ -32,6 +35,7 @@ export function Header() {
       }
       setIsAuthModalOpen(true);
     };
+
     window.addEventListener("open-auth-modal", handleOpenAuth);
     return () => {
       clearTimeout(timer);
@@ -42,7 +46,8 @@ export function Header() {
   const handleAuthSuccess = (
     address?: string, 
     name?: string, 
-    selectedRole?: "earner" | "sponsor"
+    selectedRole?: "earner" | "sponsor",
+    authenticatedUserId?: string
   ) => {
     if (address) {
       setWalletConnected(true);
@@ -54,6 +59,18 @@ export function Header() {
     if (selectedRole) {
       setRole(selectedRole);
     }
+
+    if (authenticatedUserId && name && selectedRole) {
+      const session = {
+        userId: authenticatedUserId,
+        username: name,
+        role: selectedRole,
+        walletAddress: address,
+      };
+
+      setAuthSession(session);
+      window.dispatchEvent(new CustomEvent("auth-session-changed", { detail: session }));
+    }
   };
 
   const handleDisconnect = () => {
@@ -61,6 +78,8 @@ export function Header() {
     setUsername(null);
     setRole(null);
     setWalletAddress(null);
+    clearAuthSession();
+    window.dispatchEvent(new CustomEvent("auth-session-changed", { detail: null }));
     toast.info("Logged out successfully");
   };
 
