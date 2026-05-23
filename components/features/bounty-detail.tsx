@@ -339,6 +339,14 @@ export function BountyDetail({ gig, submissions }: BountyDetailProps) {
                     <p className="mt-3 text-center text-[10px] leading-[1.5] text-stellar-black/50 dark:text-stellar-gray/60 font-medium">
                       Winners get their {gig.fee_xlm} XLM fee back plus the full prize. Losing fees fund the platform.
                     </p>
+                    {gig.submissions > 0 && (
+                      <Link
+                        href={`/sponsor/${gig.slug}/review`}
+                        className="mt-2 inline-flex w-full items-center justify-center rounded-md border border-stellar-teal/30 bg-stellar-teal/5 px-3 py-2 text-[12px] font-semibold text-stellar-teal hover:bg-stellar-teal/10 transition-colors duration-200"
+                      >
+                        Review submissions
+                      </Link>
+                    )}
                   </>
                 )}
 
@@ -353,6 +361,12 @@ export function BountyDetail({ gig, submissions }: BountyDetailProps) {
                         The sponsor is reviewing all entries.
                       </p>
                     </div>
+                    <Link
+                      href={`/sponsor/${gig.slug}/review`}
+                      className="mt-2 inline-flex w-full items-center justify-center rounded-md border border-stellar-teal/30 bg-stellar-teal/5 px-3 py-2 text-[12px] font-semibold text-stellar-teal hover:bg-stellar-teal/10 transition-colors duration-200"
+                    >
+                      Open review dashboard
+                    </Link>
                   </div>
                 )}
 
