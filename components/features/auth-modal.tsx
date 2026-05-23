@@ -78,11 +78,16 @@ export function AuthModal({
         throw new Error(signed.error ?? "Wallet signature failed");
       }
 
+      const signatureBase64 =
+        typeof signed.signedMessage === "string"
+          ? signed.signedMessage
+          : Buffer.from(signed.signedMessage).toString("base64");
+
       const confirmed = await confirmWalletChallenge({
         challenge_id: challengeResponse.challenge_id,
         stellar_public_key: access.address,
         challenge: challengeResponse.challenge,
-        signature_base64: signed.signedMessage,
+        signature_base64: signatureBase64,
       });
 
       if ("error" in confirmed) {
@@ -318,6 +323,34 @@ export function AuthModal({
           {/* SIGN UP CONTENT */}
           <TabsContent value="signup" className="mt-4 flex flex-col gap-4">
             <form onSubmit={handleSignUp} className="flex flex-col gap-3.5">
+              {!connectedWallet && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={isWalletConnecting}
+                  onClick={handleWalletConnect}
+                  className="relative flex h-10 w-full items-center justify-center gap-2 border-zinc-200 bg-white text-zinc-900 hover:bg-zinc-50 hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800"
+                >
+                  {isWalletConnecting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin text-stellar-teal" />
+                      <span className="text-xs font-medium">Authorizing via SEP-10...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Wallet className="h-4 w-4 text-[#FDDA24] fill-[#FDDA24]/10" />
+                      <span className="text-xs font-semibold">Connect & Verify Wallet First</span>
+                    </>
+                  )}
+                </Button>
+              )}
+
+              {connectedWallet && (
+                <div className="rounded-md border border-emerald-500/25 bg-emerald-500/10 px-3 py-2 text-[10px] text-emerald-700 dark:text-emerald-300">
+                  Wallet verified: {connectedWallet.substring(0, 6)}...{connectedWallet.slice(-4)}
+                </div>
+              )}
+
               <div className="space-y-1">
                 <Label className="text-xs font-bold text-zinc-800 dark:text-zinc-200">
                   Select Profile Type
