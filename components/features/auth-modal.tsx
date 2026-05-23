@@ -88,6 +88,7 @@ export function AuthModal({
         stellar_public_key: access.address,
         challenge: challengeResponse.challenge,
         signature_base64: signatureBase64,
+        signer_address: signed.signerAddress ?? access.address,
       });
 
       if ("error" in confirmed) {

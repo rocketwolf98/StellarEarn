@@ -204,6 +204,7 @@ export async function confirmWalletChallenge(payload: {
   stellar_public_key: string;
   challenge: string;
   signature_base64: string;
+  signer_address?: string;
 }): Promise<
   | { authenticated: true; requires_profile: boolean; user: { id: string; username: string; role: string } | null }
   | { error: string }
