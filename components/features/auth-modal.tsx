@@ -10,16 +10,16 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { confirmWalletChallenge, registerUser, requestWalletChallenge } from "@/lib/api";
 import { requestAccess, signMessage } from "@stellar/freighter-api";
-import { 
-  Wallet, 
-  Mail, 
-  Lock, 
-  User, 
-  Check, 
-  Loader2, 
-  ShieldCheck, 
-  UserSquare2, 
-  Building2 
+import {
+  Wallet,
+  Mail,
+  Lock,
+  User,
+  Check,
+  Loader2,
+  ShieldCheck,
+  UserSquare2,
+  Building2
 } from "lucide-react";
 
 interface AuthModalProps {
@@ -36,11 +36,11 @@ export function AuthModal({
   defaultTab = "signin",
 }: AuthModalProps) {
   const [activeTab, setActiveTab] = useState<string>(defaultTab);
-  
+
   // Wallet state
   const [isWalletConnecting, setIsWalletConnecting] = useState(false);
   const [connectedWallet, setConnectedWallet] = useState<string | null>(null);
-  
+
   // Sign In states
   const [signInEmail, setSignInEmail] = useState("");
   const [signInPassword, setSignInPassword] = useState("");
@@ -214,14 +214,14 @@ export function AuthModal({
           className="mt-2 w-full"
         >
           <TabsList className="grid w-full grid-cols-2 rounded-full bg-zinc-100 p-1 h-9 items-center dark:bg-zinc-900">
-            <TabsTrigger 
-              value="signin" 
+            <TabsTrigger
+              value="signin"
               className="rounded-full h-7 text-xs font-semibold data-active:bg-white data-active:text-zinc-900 dark:data-active:bg-zinc-800 dark:data-active:text-zinc-100 data-active:shadow-sm"
             >
               Sign In
             </TabsTrigger>
-            <TabsTrigger 
-              value="signup" 
+            <TabsTrigger
+              value="signup"
               className="rounded-full h-7 text-xs font-semibold data-active:bg-white data-active:text-zinc-900 dark:data-active:bg-zinc-800 dark:data-active:text-zinc-100 data-active:shadow-sm"
             >
               Create Account
