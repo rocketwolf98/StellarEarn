@@ -22,6 +22,7 @@ export function Header() {
 
   const [mounted, setMounted] = useState(false);
   const { setTheme, resolvedTheme } = useTheme();
+  const isAuthenticated = mounted && (walletConnected || username);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -132,7 +133,7 @@ export function Header() {
             Become a Sponsor <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
           </Link>
 
-          {walletConnected || username ? (
+          {isAuthenticated ? (
             <>
               {/* My Submissions link */}
               <Link
