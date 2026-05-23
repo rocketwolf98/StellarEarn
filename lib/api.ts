@@ -64,6 +64,51 @@ export async function fetchGig(
 }
 
 /**
+ * Create a new gig/bounty listing.
+ */
+export async function createGig(payload: {
+  title: string;
+  slug: string;
+  org: string;
+  initials: string;
+  description: string;
+  desc_short?: string;
+  prize_php: number;
+  reward_amount: number;
+  reward_unit?: string;
+  fee_xlm?: number;
+  type?: "bounty" | "project" | "grant";
+  skill: string;
+  deadline_at: string;
+  featured?: boolean;
+  live?: boolean;
+  status?: "open" | "pending_review" | "closed" | "paid";
+  sponsor_name?: string;
+  sponsor_wallet?: string;
+  created_by_user_id?: string;
+  bg?: string;
+  color?: string;
+  deliverables?: string[];
+}): Promise<{ id: string; slug: string; title: string; status: string } | { error: string }> {
+  try {
+    const res = await fetch(`${BASE}/api/gigs`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const data: unknown = await res.json();
+    if (!res.ok) {
+      return { error: (data as { error?: string; details?: string }).details ?? (data as { error?: string }).error ?? "Failed to create gig" };
+    }
+
+    return data as { id: string; slug: string; title: string; status: string };
+  } catch {
+    return { error: "Network error" };
+  }
+}
+
+/**
  * POST a new submission.
  */
 export async function postSubmission(payload: {
